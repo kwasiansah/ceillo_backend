@@ -152,8 +152,7 @@ def user_password_reset(request):
     sender = settings.EMAIL_HOST_USER
     # TODO: the to would be changed to request.data
     to = ['kwasiansahasare@gmail.com']
-    # send_mail(subject, message, sender, to)
-    print(link)
+    send_mail(subject, message, sender, to)
     return Response({'reset': 'password reset email sent'})
 
 
