@@ -1,4 +1,5 @@
 
+from rest_framework_simplejwt.views import TokenVerifyView
 from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import EmailMessage
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
@@ -84,32 +85,22 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def user_list(request):
-    print(request.user)
-    # print(request.build_absolute_uri('/home/'))
     queryset = Customer.objects.all()
     serializer = ListCustomerSerializer(queryset, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status.HTTP_200_OK)
+
+
+def g(request):
+    for i in dir(request):
+        print(i)
 
 
 @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-def user_detail(request, first_name):
-    data = payload(str(request.auth))
-    print(data['user_id'])
-    try:
-        queryset = Customer.objects.get(id=data['user_id'])
-    except Customer.DoesNotExist:
-        return Response(data='user does not exit', status=status.HTTP_404_NOT_FOUND)
-    serializer = RetrieveCustomerSerializer(queryset)
-    # user = serializer.instance
-    # login(request, user)
-    # # logout(request)
-    # print(user.email, user.password)
-    # h= authenticate( username='dada@gmail.com', password='dada@123')
-    # print(h)
-    # print(request.user)
+@permission_classes([IsAuthenticated])
+def user_detail(request):
+    user = request.user
+    serializer = RetrieveCustomerSerializer(user)
     data = {
-        'status': 'okay',
         'data': serializer.data,
         'message': 'detailed view results'
     }
@@ -117,22 +108,32 @@ def user_detail(request, first_name):
 
 
 @ api_view(['PUT', 'PATCH'])
-def user_update(request, first_name):
+@permission_classes([IsAuthenticated])
+def user_update(request):
+    data = payload(str(request.auth))
     try:
-        queryset = Customer.objects.get(first_name=first_name)
+        queryset = Customer.objects.get(customer_id=data['user_id'])
     except Customer.DoesNotExist:
-        return Response(data='user does not exit')
+        data = {
+            'message': 'user does not exit'
+        }
+        return Response(data, status.HTTP_404_NOT_FOUND)
     if request.method == "PUT":
         serializer = RetrieveCustomerSerializer(queryset, data=request.data)
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid():
             serializer.save()
         else:
+            data = {
+                'status': 'okay',
+                'data': serializer.data,
+                'message': 'detailed view results'
+            }
             return Response({"data": "invalid data to update"})
     else:
         serializer = RetrieveCustomerSerializer(
             queryset, data=request.data, partial=True)
         # remove the raise_exception to output the response data
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid():
             serializer.save()
         else:
             return Response({"data": "invalid data to patch"})
@@ -156,9 +157,12 @@ def user_create(request):
 
 
 @ api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def user_delete(request, first_name):
+    data = payload(str(request.auth))
+    print(data['user_id'])
     try:
-        queryset = Customer.objects.get(first_name=first_name)
+        queryset = Customer.objects.get(customer_id=data['user_id'])
     except Customer.DoesNotExist:
         return Response(data='user does not exit')
     serilizer = RetrieveCustomerSerializer(queryset)
@@ -167,8 +171,14 @@ def user_delete(request, first_name):
 
 
 @ api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def password_change(request, first_name):
-    queryset = Customer.objects.get(first_name=first_name)
+    data = payload(str(request.auth))
+    print(data['user_id'])
+    try:
+        queryset = Customer.objects.get(customer_id=data['user_id'])
+    except Customer.DoesNotExist:
+        return Response(data='user does not exit')
     serializer = CustomerPasswordChangeSerializer(queryset, data=request.data)
     print(serializer)
     print('it got here')
@@ -188,21 +198,23 @@ def password_change(request, first_name):
 
 @ api_view(('GET',))
 @ renderer_classes((JSONRenderer,))
+@permission_classes([IsAuthenticated])
 def user_password_reset(request, first_name):
     # sends the email
     time = 60 * 50
+    data = payload(str(request.auth))
     try:
-        user = Customer.objects.get(first_name=first_name)
+        user = Customer.objects.get(customer_id=data['user_id'])
     except Customer.DoesNotExist:
-        response({'Customer': 'Does not exist'})
+        return Response(data='user does not exit')
 
     token = create_token(user, time, 'email')
     print(token)
     link = request.build_absolute_uri(
-        f'/api/reset/confirm/{first_name}/{token.key}/')
+        f'/auth/password-rest-confirm/{token.key}/')
     print(link)
     subject = 'your password reset token '
-    message = f'hello {first_name} follow this link to reset your password   {link}'
+    message = f'hello {first_name} follow this link to reset your password {link}'
     sender = settings.EMAIL_HOST_USER
     # TODO: the to would be changed to request.data
     to = ['kwasiansahasare@gmail.com']
@@ -226,11 +238,14 @@ def user_password_reset_done(request, first_name):
 
 
 @ api_view(['POST'])
-def user_password_reset_confirm(request, first_name, token):
+@permission_classes([IsAuthenticated])
+def user_password_reset_confirm(request, token):
+    data = payload(str(request.auth))
+    print(data['user_id'])
     try:
-        user = Customer.objects.get(first_name=first_name)
+        user = Customer.objects.get(customer_id=data['user_id'])
     except Customer.DoesNotExist:
-        return response({'Customer': 'Does not exist'})
+        return Response(data='user does not exit')
 
     auth_user = authenticate_token(user, token)
 

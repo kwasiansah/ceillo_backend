@@ -1,5 +1,6 @@
+from django.utils.translation import ugettext_lazy as _
 from os import terminal_size
-from rest_framework import serializers, validators
+from rest_framework import exceptions, serializers, validators
 from rest_framework.fields import ReadOnlyField
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -176,6 +177,17 @@ class CreateCustomerSerializer(TokenObtainPairSerializer):
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    default_error_messages = {
+        'message': _('not a valid email address')
+    }
+
+    def validate(self, attrs):
+        try:
+            data = super().validate(attrs)
+        except exceptions.AuthenticationFailed:
+            raise exceptions.AuthenticationFailed(self.default_error_messages)
+        return data
+
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
@@ -185,6 +197,47 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['first_name'] = user.first_name
 
         return token
+
+# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+#     default_error_messages = {
+#         'message': _('not a valid email address')
+#     }
+
+#     def validate(self, attrs):
+#         authenticate_kwargs = {
+#             self.username_field: attrs[self.username_field],
+#             'password': attrs['password'],
+#         }
+#         try:
+#             authenticate_kwargs['request'] = self.context['request']
+#         except KeyError:
+#             pass
+#         self.user = authenticate(**authenticate_kwargs)
+
+#         if not api_settings.USER_AUTHENTICATION_RULE(self.user):
+#             raise exceptions.AuthenticationFailed(
+#                 self.error_messages['no_active_account'],
+#                 'no_active_account',
+#             )
+
+#         refresh = self.get_token(self.user)
+
+#         data['refresh'] = str(refresh)
+#         data['access'] = str(refresh.access_token)
+
+#         if api_settings.UPDATE_LAST_LOGIN:
+#             update_last_login(None, self.user)
+
+#         return data
+#     @classmethod
+#     def get_token(cls, user):
+#         token = super().get_token(user)
+
+#         # Add custom claims
+#         print(user)
+#         token['first_name'] = user.first_name
+
+#         return token
 
 
 class CustomerPasswordChangeSerializer(serializers.Serializer):
