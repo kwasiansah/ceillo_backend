@@ -1,13 +1,13 @@
 from django.conf import settings
 import jwt
-from jwt import exceptions
 import pytz
 from datetime import timedelta
 from django.utils import timezone
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.serializers import Serializer
 from customer.models import AuthToken, Customer
+from django.db.utils import IntegrityError
 
 
 def expire(time):
@@ -17,23 +17,27 @@ def expire(time):
 def create_token(user, time, type):
     print(user)
     # integrity error
-    token = AuthToken.objects.create(user=user, expire=expire(time), type=type)
+    try:
+        token = AuthToken.objects.create(
+            user=user, expire=expire(time), type=type)
+    except IntegrityError:
+        raise serializers.ValidationError({'error': 'email already sent'})
     token.save()
     return token
 
 
 def authenticate_token(user, token):
     try:
-        auth_user = user.auth_token
-    except Customer.DoesNotExist:
-        raise serializers.ValidationError({'error': 'Invalid Token'})
-    if auth_user.key != token:
+        Token = AuthToken.objects.get(user=user)
+    except AuthToken.DoesNotExist:
+        raise serializers.ValidationError({'message': 'Invalid Token'}, status)
+    if Token.key != token:
         raise serializers.ValidationError({'error': "token do not match"})
     timenow = timezone.now()
 
     timenow = timenow.replace(tzinfo=pytz.utc)
 
-    if auth_user.expire < timenow:
+    if Token.expire < timenow:
         raise serializers.ValidationError({'error': 'Token exp'})
 
     return user, token

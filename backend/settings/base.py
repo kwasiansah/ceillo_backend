@@ -209,7 +209,7 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         # 'rest_framework.renderers.AdminRenderer',
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
+        # 'rest_framework.renderers.BrowsableAPIRenderer',
 
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -226,3 +226,6 @@ EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'ceillogh@gmail.com'
 EMAIL_HOST_USER = 'ceillogh@gmail.com'
 EMAIL_HOST_PASSWORD = 'ceillo@123'
+
+# this defines the time it takes the token to expire
+EMAIL_RESET_TOKEN_TIMEOUT_MIN = 0
