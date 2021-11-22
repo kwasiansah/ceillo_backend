@@ -49,6 +49,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     status = models.CharField(max_length=2, choices=[
                               x.value for x in ACTIVE_CHOICES], default='AC')
     # first name required
+    is_active = models.BooleanField(default=True)
     first_name = models.CharField(
         _('first name'), max_length=150, blank=True, default="")
     # last name required
@@ -70,7 +71,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     photo = models.ImageField(upload_to='profile/', null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     # the terms field is for terms and conditions
-    terms = models.BooleanField(default=False)
+    agreed_to_terms = models.BooleanField(default=False)
 
     address = models.CharField(max_length=250, blank=True, null=False)
     objects = CustomerManager()
@@ -128,4 +129,4 @@ class AuthToken(Token):
     type = models.CharField(max_length=250, default="")
 
     def __str__(self):
-        return self.user
+        return self.key

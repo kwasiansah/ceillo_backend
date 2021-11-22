@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '=%gglh9$vmlbah*d(o!6x+l%l60t%+q$m)w%vxtz2ag=m)q7sj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', '192.168.8.100', 'ceillo-app.herokuapp.com']
 
@@ -212,12 +212,16 @@ REST_FRAMEWORK = {
         # 'rest_framework.renderers.BrowsableAPIRenderer',
 
     ),
+    'EXCEPTION_HANDLER': 'customer.utils.exceptions.custom_exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
+
+NON_FIELD_ERRORS_KEY = 'message'
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_HOST = 'smtp.gmail.com'
@@ -228,4 +232,4 @@ EMAIL_HOST_USER = 'ceillogh@gmail.com'
 EMAIL_HOST_PASSWORD = 'ceillo@123'
 
 # this defines the time it takes the token to expire
-EMAIL_RESET_TOKEN_TIMEOUT_MIN = 0
+EMAIL_RESET_TOKEN_TIMEOUT_MIN = 60

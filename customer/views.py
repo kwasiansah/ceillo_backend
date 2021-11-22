@@ -1,15 +1,17 @@
+from django.core.checks import messages
 from rest_framework.renderers import JSONRenderer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CreateCustomerSerializer, CustomerPasswordChangeSerializer, CustomerUserPasswordResetConfirmSerializer,  ListCustomerSerializer, MerchantSerializer, MyTokenObtainPairSerializer,  RetrieveCustomerSerializer
+from .serializers import CreateCustomerSerializer, CustomerPasswordChangeSerializer, CustomerUserPasswordResetConfirmSerializer,  ListCustomerSerializer, MerchantSerializer, MyTokenObtainPairSerializer,  RetrieveCustomerSerializer, UpdateCustomerSerializer
 from rest_framework.response import Response
-from .models import Customer, Merchant
+from .models import AuthToken, Customer, Merchant
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes, renderer_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 from django.core.mail import send_mail
 from django.conf import settings
-from .utils import create_token, authenticate_token
+from rest_framework import exceptions
+from .utils.helper_func import create_token, authenticate_token
 
 
 class CustomerList(ListAPIView):
@@ -36,6 +38,7 @@ class MerchantViewSet(viewsets.ModelViewSet):
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
+
     serializer_class = MyTokenObtainPairSerializer
 
 
@@ -68,7 +71,8 @@ def user_detail(request):
 def user_update(request):
     user = request.user
     if request.method == "PUT":
-        serializer = RetrieveCustomerSerializer(user, data=request.data)
+        serializer = UpdateCustomerSerializer(
+            user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
         else:
@@ -79,7 +83,7 @@ def user_update(request):
             }
             return Response(data, status.HTTP_406_NOT_ACCEPTABLE)
     else:
-        serializer = RetrieveCustomerSerializer(
+        serializer = UpdateCustomerSerializer(
             user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -106,7 +110,7 @@ def user_create(request):
         return Response(data, status=status.HTTP_201_CREATED)
     data = {
         'errors': serializer.errors,
-        'message': 'sign up unsuccessfull'
+        'message': 'Sign Up Unsuccessfull'
     }
     return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
@@ -117,7 +121,7 @@ def user_delete(request):
     user = request.user
     user.delete()
     data = {
-        'message': 'customer successfully deleted'
+        'message': 'Account Deleted'
     }
     return Response(data, status.HTTP_201_CREATED)
 
@@ -130,38 +134,45 @@ def password_change(request):
     if serializer.is_valid():
         serializer.save()
     data = {
-        'message': " password successfully changed"
+        'message': "Password Successfully Changed"
     }
     return Response(data, status.HTTP_200_OK)
 
 
 @ api_view(('GET',))
 @ renderer_classes((JSONRenderer,))
-@permission_classes([IsAuthenticated])
 def user_password_reset(request):
 
     timeout = 60 * settings.EMAIL_RESET_TOKEN_TIMEOUT_MIN
-
-    user = request.user
+    try:
+        user = Customer.objects.get(email=request.data['email'])
+    except Customer.DoesNotExist:
+        data = {'message': "Account Not Found"}
+        raise exceptions.NotFound(data, status.HTTP_404_NOT_FOUND)
     token = create_token(user, timeout, 'email')
     # TODO: this link would be linked to a part of the front end
-    link = request.build_absolute_uri(
-        f'/auth/password-reset-confirm/{token.key}/')
+    link = f"https://ceillo.netlify.app/password-reset-confirm/{token}/"
     subject = 'your password reset token '
     message = f'hello {user.first_name} follow this link to reset your password {link}'
     sender = settings.EMAIL_HOST_USER
-    # TODO: the to would be changed to request.data
-    to = ['kwasiansahasare@gmail.com']
+    email = user.email.upper()
+    to = [user.email]
     send_mail(subject, message, sender, to)
-    return Response({'reset': 'password reset email sent'})
+    print(link)
+    data = {
+        'message': f'An Email Has Been Sent To {email}',
+    }
+    return Response(data, status.HTTP_200_OK)
 
 
 @ api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def user_password_reset_confirm(request, token):
-    user = request.user
+def user_password_reset_confirm(request):
+    token = request.data.pop('token', False)
+    if not token:
+        raise exceptions.NotFound({'message': 'token not found'})
     data = {'message': "password successfuly reset"}
-    auth_user = authenticate_token(user, token)
+    user = authenticate_token(token)
     serializer = CustomerUserPasswordResetConfirmSerializer(
         instance=user, data=request.data)
     if serializer.is_valid():

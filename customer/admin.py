@@ -18,7 +18,7 @@ class UserCreationForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ('photo', 'email', 'phone_number', 'first_name', 'last_name',
-                  'password', 'terms', 'is_staff', 'is_superuser', 'status',)
+                  'password', 'agreed_to_terms', 'is_staff', 'is_superuser', 'status',)
 
     def clean_password2(self):
 
@@ -46,7 +46,7 @@ class UserChangeForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ('photo', 'email', 'phone_number', 'first_name', 'last_name',
-                  'password', 'terms', 'is_staff', 'is_superuser', 'status',)
+                  'password', 'agreed_to_terms', 'is_staff', 'is_superuser', 'status',)
 
 
 class UserAdmin(BaseUserAdmin):
@@ -58,7 +58,7 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ('is_superuser',)
     fieldsets = (
         (None, {'fields': ('email', 'password',
-         'phone_number', 'terms')}),
+         'phone_number', 'agreed_to_terms')}),
         ('Personal info', {'fields': ('first_name', 'last_name',)}),
         ('Permissions', {'fields': ('status', 'is_superuser',
          'is_staff', 'user_permissions', 'groups')}),
@@ -68,7 +68,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'phone_number', 'first_name', 'last_name',  'is_superuser', 'is_staff', 'status', 'password1', 'password2', 'photo', 'terms'),
+            'fields': ('email', 'phone_number', 'first_name', 'last_name',  'is_superuser', 'is_staff', 'status', 'password1', 'password2', 'photo', 'agreed_to_terms'),
         }),
     )
     search_fields = ('email',)

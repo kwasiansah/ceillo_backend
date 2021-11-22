@@ -1,3 +1,4 @@
+
 from .views import *
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -10,8 +11,13 @@ urlpatterns = [
     path('list/', user_list, name='user_list'),
     path('password-change/', password_change, name='password-change'),
     path('password-reset/', user_password_reset, name='password-reset'),
-    path('password-reset-confirm/<str:token>/',
+    path('password-reset-confirm/',
          user_password_reset_confirm, name='password-reset-confirm'),
     path('login/', MyTokenObtainPairView.as_view(), name='login'),
     path('token-refresh/', TokenRefreshView.as_view(), name='token-refresh'),
 ]
+
+
+handler404 = 'customer.utils.views.error_404'
+
+handler500 = 'customer.utils.views.error_500'

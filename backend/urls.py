@@ -30,3 +30,7 @@ urlpatterns = [
     path('docs/', include_docs_urls(title='Polls API')),
     path('__debug__/', include(debug_toolbar.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler404 = 'customer.utils.views.error_404'
+
+handler500 = 'customer.utils.views.error_500'

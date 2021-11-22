@@ -4,6 +4,7 @@ import pytz
 from datetime import timedelta
 from django.utils import timezone
 from rest_framework import serializers, status
+from rest_framework import exceptions
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from customer.models import AuthToken, Customer
@@ -21,26 +22,35 @@ def create_token(user, time, type):
         token = AuthToken.objects.create(
             user=user, expire=expire(time), type=type)
     except IntegrityError:
-        raise serializers.ValidationError({'error': 'email already sent'})
+
+        token = AuthToken.objects.get(user=user)
+        token.delete()
+        token = AuthToken.objects.create(
+            user=user, expire=expire(time), type=type)
+        # raise serializers.ValidationError({'error': 'email already sent'})
     token.save()
     return token
 
 
-def authenticate_token(user, token):
+def authenticate_token(token):
+
     try:
-        Token = AuthToken.objects.get(user=user)
+        Token = AuthToken.objects.get(key=token)
     except AuthToken.DoesNotExist:
-        raise serializers.ValidationError({'message': 'Invalid Token'}, status)
+        raise exceptions.APIException(
+            {'message': 'Invalid Token'}, status.HTTP_403_FORBIDDEN)
     if Token.key != token:
-        raise serializers.ValidationError({'error': "token do not match"})
+        raise serializers.ValidationError(
+            {'error': "token do not match"}, status.HTTP_400_BAD_REQUEST)
     timenow = timezone.now()
 
     timenow = timenow.replace(tzinfo=pytz.utc)
 
     if Token.expire < timenow:
-        raise serializers.ValidationError({'error': 'Token exp'})
+        raise serializers.ValidationError(
+            {'error': 'Token exp'}, status.HTTP_403_FORBIDDEN)
 
-    return user, token
+    return Token.user
 
 
 def payload(request):
