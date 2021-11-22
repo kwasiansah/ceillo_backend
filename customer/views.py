@@ -166,7 +166,7 @@ def user_password_reset(request):
 
 @ api_view(['POST'])
 def user_password_reset_confirm(request):
-    token = request.data.pop('token', False)
+    token = request.data.get('token', False)
     if not token:
         raise exceptions.NotFound({'message': 'token not found'})
     data = {'message': "password successfuly reset"}
