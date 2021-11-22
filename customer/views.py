@@ -158,7 +158,6 @@ def user_password_reset(request):
     email = user.email.upper()
     to = [user.email]
     send_mail(subject, message, sender, to)
-    print(link)
     data = {
         'message': f'An Email Has Been Sent To {email}',
     }
@@ -166,7 +165,6 @@ def user_password_reset(request):
 
 
 @ api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def user_password_reset_confirm(request):
     token = request.data.pop('token', False)
     if not token:
