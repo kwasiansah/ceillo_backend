@@ -139,8 +139,7 @@ def password_change(request):
     return Response(data, status.HTTP_200_OK)
 
 
-@ api_view(('GET',))
-@ renderer_classes((JSONRenderer,))
+@ api_view(['POST'])
 def user_password_reset(request):
 
     timeout = 60 * settings.EMAIL_RESET_TOKEN_TIMEOUT_MIN

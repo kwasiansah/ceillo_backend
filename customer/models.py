@@ -120,7 +120,8 @@ pre_save.connect(Passwordhasher, sender=Customer)
 
 class AuthToken(Token):
     # i would add the editable attribute later
-    key = models.CharField(_('Key'), max_length=40, db_index=True, unique=True)
+    key = models.CharField(_('Key'), max_length=40,
+                           db_index=True, unique=True, editable=False)
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, related_name='auth_token',
         on_delete=models.CASCADE, verbose_name=_("customer"))
