@@ -48,7 +48,7 @@ class CreateCustomerSerializer(TokenObtainPairSerializer):
     def validate_password_match(self, attrs):
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError(
-                {'message': 'Password do not match'}, status.HTTP_400_BAD_REQUEST)
+                {'message': 'Passwords Do Not Match'}, status.HTTP_400_BAD_REQUEST)
         return attrs
 
     def validate(self, attrs):
@@ -59,7 +59,7 @@ class CreateCustomerSerializer(TokenObtainPairSerializer):
             return attrs
 
         raise serializers.ValidationError(
-            {"message": 'Email already exist'}, status.HTTP_400_BAD_REQUEST)
+            {"message": 'Email Already Exists'}, status.HTTP_400_BAD_REQUEST)
 
     def create(self, validated_data):
         user = Customer.objects.create_user(
@@ -113,14 +113,14 @@ class CustomerPasswordChangeSerializer(serializers.Serializer):
     def validate_old_password(self, data):
         if not self.instance.check_password(data):
             raise serializers.ValidationError(
-                {"message": "Old password is invalid"}, status.HTTP_400_BAD_REQUEST)
+                {"message": "Old Password Is Invalid"}, status.HTTP_400_BAD_REQUEST)
         return data
 
     def validate(self, data):
         data = super().validate(data)
         if data['password'] != data['password2']:
             raise serializers.ValidationError(
-                {"message": "Passwords do not match"}, status.HTTP_400_BAD_REQUEST)
+                {"message": "Passwords Do Not Match"}, status.HTTP_400_BAD_REQUEST)
         return data
 
     def update(self, instance, validated_data):
@@ -139,7 +139,7 @@ class CustomerUserPasswordResetConfirmSerializer(serializers.Serializer):
         attrs = super().validate(attrs)
         if attrs['password1'] != attrs['password2']:
             raise serializers.ValidationError(
-                {'passwords': 'passwords do not match'}, status.HTTP_400_BAD_REQUEST)
+                {'passwords': 'Passwords Do Not Match'}, status.HTTP_400_BAD_REQUEST)
         return attrs
 
     def update(self, instance, validated_data):

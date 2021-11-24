@@ -9,7 +9,7 @@ class CustomerManager(BaseUserManager):
     def create_user(self, **data):
         
         if not data['email']:
-            raise ValueError(_('The Email must be set'))
+            raise ValueError(_('The Email Must Be Set'))
         # TODO: may also consider creating a check for the username field
         email = data.pop('email')
         email = self.normalize_email(email)

@@ -11,7 +11,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDe
 from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework import exceptions
-from .utils.helper_func import create_token, authenticate_token
+from .utils.helper_func import create_token, authenticate_token, password_reset_email
 
 
 class CustomerList(ListAPIView):
@@ -105,7 +105,7 @@ def user_create(request):
         data = {
             'data': serializer.data,
             'token': serializer.validated_data['token'],
-            'message': 'sign up successfull',
+            'message': 'Sign Up Successfull',
         }
         return Response(data, status=status.HTTP_201_CREATED)
     data = {
@@ -141,7 +141,6 @@ def password_change(request):
 
 @ api_view(['POST'])
 def user_password_reset(request):
-
     timeout = 60 * settings.EMAIL_RESET_TOKEN_TIMEOUT_MIN
     try:
         user = Customer.objects.get(email=request.data['email'])
@@ -149,14 +148,15 @@ def user_password_reset(request):
         data = {'message': "Account Not Found"}
         raise exceptions.NotFound(data, status.HTTP_404_NOT_FOUND)
     token = create_token(user, timeout, 'email')
-    # TODO: this link would be linked to a part of the front end
-    link = f"https://ceillo.netlify.app/password-reset-confirm/{token}/"
-    subject = 'your password reset token '
-    message = f'hello {user.first_name} follow this link to reset your password {link}'
-    sender = settings.EMAIL_HOST_USER
-    email = user.email.upper()
-    to = [user.email]
-    send_mail(subject, message, sender, to)
+    # # TODO: this link would be linked to a part of the front end
+    # link = f"https://ceillo.netlify.app/password-reset-confirm/{token}/"
+    # subject = 'your password reset token'
+    # message = f'hello {user.first_name} follow this link to reset your password {link}'
+    # sender = settings.EMAIL_HOST_USER
+    # email = user.email.upper()
+    # to = [user.email]
+    # send_mail(subject, message, sender, to)
+    email = password_reset_email(user, token)
     data = {
         'message': f'An Email Has Been Sent To {email}',
     }
@@ -167,8 +167,9 @@ def user_password_reset(request):
 def user_password_reset_confirm(request):
     token = request.data.get('token', False)
     if not token:
-        raise exceptions.NotFound({'message': 'token not found'})
-    data = {'message': "password successfuly reset"}
+        raise exceptions.NotFound(
+            {'message': 'Token Not Found'}, status.HTTP_404_NOT_FOUND)
+    data = {'message': "Password Reset Successfull"}
     user = authenticate_token(token)
     serializer = CustomerUserPasswordResetConfirmSerializer(
         instance=user, data=request.data)
@@ -176,5 +177,5 @@ def user_password_reset_confirm(request):
         serializer.save()
         user.auth_token.delete()
         return Response(data, status.HTTP_200_OK)
-    data['message'] = 'password reset not valid'
+    data['message'] = 'Password Reset Not Valid'
     return Response(data, status.HTTP_400_BAD_REQUEST)
