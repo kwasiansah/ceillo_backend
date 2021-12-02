@@ -20,4 +20,4 @@ urlpatterns = [
 
 handler404 = 'customer.utils.views.error_404'
 
-handler500 = 'customer.utils.views.error_500'
+# handler500 = 'customer.utils.views.error_500'

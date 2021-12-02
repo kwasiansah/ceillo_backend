@@ -6,7 +6,7 @@ from django.contrib.auth.models import User, PermissionsMixin
 import uuid
 from django.urls import reverse
 from django.core.mail.message import EmailMessage
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from .managers import CustomerManager
 from django.db.models.signals import pre_save

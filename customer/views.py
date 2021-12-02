@@ -2,7 +2,7 @@ from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
 from drf_yasg import openapi
 from django.core.checks import messages
-from rest_framework.parsers import FileUploadParser, FormParser, MultiPartParser
+from rest_framework.parsers import FileUploadParser, FormParser, JSONParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CreateCustomerSerializer, CustomerPasswordChangeSerializer, CustomerUserPasswordResetConfirmSerializer,  ListCustomerSerializer, MerchantSerializer, MyTokenObtainPairSerializer,  RetrieveCustomerSerializer, UpdateCustomerSerializer
@@ -100,7 +100,7 @@ address = openapi.Parameter(
 
 @swagger_auto_schema(methods=['put', 'patch'], manual_parameters=[photo, phone_number, first_name, last_name, date_of_birth, address])
 @ api_view(['PUT', 'PATCH'])
-@parser_classes([FormParser, MultiPartParser])
+@parser_classes([FormParser, MultiPartParser, JSONParser])
 @permission_classes([IsAuthenticated])
 def user_update(request):
     user = request.user

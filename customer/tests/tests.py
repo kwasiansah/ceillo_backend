@@ -23,7 +23,7 @@ class CustomerTestCase(TestCase):
         address = 'Oyibi'
         date_of_birth = '30-6-1943'
         user_a = User(first_name=first_name, last_name=last_name, email=email, phone_number=phone_number,
-                          agreed_to_terms=agreed_to_terms, address=address, date_of_birth=date_of_birth)
+                      agreed_to_terms=agreed_to_terms, address=address, date_of_birth=date_of_birth)
         user_a.is_active = True
         user_a.is_staff = True
         user_a.is_superuser = True
@@ -53,18 +53,17 @@ class CustomerTestCase(TestCase):
         login_url = '/auth/login/'
         reverse_url = reverse('login')
         self.assertTrue(reverse_url == login_url)
-        data = {'email':'testing@gmail.com', 'password':'sometest@123'}
+        data = {'email': 'testing@gmail.com', 'password': 'sometest@123'}
         # data = {'email': self.user_a.email, 'password': self.user_a.password}
 
         response = Client().post(login_url, data, format=json)
         self.refresh = response.data['refresh']
         self.access = response.data['access']
         response = self.client.get(
-            reverse('user_detail'), HTTP_AUTHORIZATION = 'Bearer ' + response.data['access'])
+            reverse('user_detail'), HTTP_AUTHORIZATION='Bearer ' + response.data['access'])
         print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        
     def test_authenticate_user(self):
         print(settings.AUTH_USER_MODEL)
         user = authenticate(email=self.user_a.email, password='sometest@123')
@@ -73,5 +72,3 @@ class CustomerTestCase(TestCase):
     # def test_detail_view(self):
     #     response = self.client.get(reverse('user_detail'), HTTP_AUTHORIZATION = self.access)
     #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
-        

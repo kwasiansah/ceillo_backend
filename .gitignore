@@ -3,6 +3,6 @@
 .env
 /princepk.py
 /front
-/ceillo.sqlite3
+ceillo.sqlite3
 /__pycache__
 /backend/ceillo.sqlite3

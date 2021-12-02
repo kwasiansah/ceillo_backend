@@ -9,10 +9,10 @@ def error_404(request, exception):
     return response
 
 
-def error_500(request):
-    message = ('A Mistake From The Backend')
+# def error_500(request):
+#     message = ('A Mistake From The Backend')
 
-    response = JsonResponse(data={'message': message, 'status_code': 500
-                                  })
-    response.status_code = 500
-    return response
+#     response = JsonResponse(data={'message': message, 'status_code': 500
+#                                   })
+#     response.status_code = 500
+#     return response
