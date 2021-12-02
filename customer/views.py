@@ -100,7 +100,7 @@ address = openapi.Parameter(
 
 @swagger_auto_schema(methods=['put', 'patch'], manual_parameters=[photo, phone_number, first_name, last_name, date_of_birth, address])
 @ api_view(['PUT', 'PATCH'])
-@parser_classes([FormParser, MultiPartParser, JSONParser])
+@parser_classes([FormParser, MultiPartParser])
 @permission_classes([IsAuthenticated])
 def user_update(request):
     user = request.user
