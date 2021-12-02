@@ -37,7 +37,7 @@ class ProductAnswerSerializer(serializers.ModelSerializer):
     question = ProductQuestionSerializer()
     class Meta:
         model = ProductAnswer
-        fields = ['answer', 'question', 'voting', 'customer', 'created', 'updated', 'status']
+        fields = ['answer', 'question', 'voting', 'customer', 'created', 'updated', 'active']
         
 class ProductReviewsSerializer(serializers.ModelSerializer):
     # product = ProductSerializer()

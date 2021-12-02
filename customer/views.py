@@ -1,11 +1,15 @@
+from drf_yasg.utils import swagger_auto_schema
+from django.utils.decorators import method_decorator
+from drf_yasg import openapi
 from django.core.checks import messages
+from rest_framework.parsers import FileUploadParser, FormParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CreateCustomerSerializer, CustomerPasswordChangeSerializer, CustomerUserPasswordResetConfirmSerializer,  ListCustomerSerializer, MerchantSerializer, MyTokenObtainPairSerializer,  RetrieveCustomerSerializer, UpdateCustomerSerializer
 from rest_framework.response import Response
 from .models import AuthToken, Customer, Merchant
-from rest_framework import viewsets, status
-from rest_framework.decorators import api_view, permission_classes, renderer_classes
+from rest_framework import request, viewsets, status
+from rest_framework.decorators import api_view, parser_classes, permission_classes, renderer_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 from django.core.mail import send_mail
@@ -37,6 +41,20 @@ class MerchantViewSet(viewsets.ModelViewSet):
 # Create your views here.
 
 
+# login_email = openapi.Schema(
+#     'email', in_=openapi.IN_BODY, description='user email', type=openapi.TYPE_STRING, schema=MyTokenObtainPairSerializer)
+# login_password = openapi.Schema(
+#     'password', in_=openapi.IN_BODY, description='user email', type=openapi.TYPE_STRING, schema=MyTokenObtainPairSerializer)
+
+
+@method_decorator(name='post', decorator=swagger_auto_schema(request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    required=['email', 'password'],
+    properties={
+        'email': openapi.Schema(type=openapi.TYPE_STRING),
+        'password': openapi.Schema(type=openapi.TYPE_STRING)
+    },
+),))
 class MyTokenObtainPairView(TokenObtainPairView):
 
     serializer_class = MyTokenObtainPairSerializer
@@ -66,7 +84,12 @@ def user_detail(request):
     return Response(data, status.HTTP_200_OK)
 
 
+photo = openapi.Parameter('photo', openapi.IN_FORM, type=openapi.TYPE_FILE)
+
+
+@swagger_auto_schema(methods=['put', 'patch'], manual_parameters=[photo])
 @ api_view(['PUT', 'PATCH'])
+@parser_classes([FormParser, MultiPartParser])
 @permission_classes([IsAuthenticated])
 def user_update(request):
     user = request.user
@@ -97,6 +120,7 @@ def user_update(request):
     return Response(serializer.data, status.HTTP_200_OK)
 
 
+@swagger_auto_schema(method='post', request_body=CreateCustomerSerializer)
 @api_view(['POST'])
 def user_create(request):
     serializer = CreateCustomerSerializer(data=request.data)
@@ -126,6 +150,12 @@ def user_delete(request):
     return Response(data, status.HTTP_201_CREATED)
 
 
+@swagger_auto_schema(method='post', request_body=openapi.Schema(type=openapi.TYPE_OBJECT, required=['old_password', 'password', 'password2'], properties={
+    'old_password': openapi.Schema(type=openapi.TYPE_STRING),
+    'password': openapi.Schema(type=openapi.TYPE_STRING),
+    'password2': openapi.Schema(type=openapi.TYPE_STRING)
+}
+))
 @ api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def password_change(request):
