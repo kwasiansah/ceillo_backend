@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from whitenoise.middleware import WhiteNoiseMiddleware
 import dj_database_url
+from whitenoise.middleware import WhiteNoiseMiddleware
 from datetime import timedelta
 from pathlib import Path
 import os
@@ -30,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '=%gglh9$vmlbah*d(o!6x+l%l60t%+q$m)w%vxtz2ag=m)q7sj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', '192.168.8.100', 'ceillo-app.herokuapp.com']
 
@@ -101,9 +101,8 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-
-DATABASES['default'] = dj_database_url.config(
-    env='postgres://rbrdpyhintglrw:2d71ffb2e1c7ffcd820a78e6230e19e0d70128bce2bc90967bcce9fbfcd0acd2@ec2-44-199-40-188.compute-1.amazonaws.com:5432/d6d0cq9nmvoin8', conn_max_age=600, engine='django.db.backends.postgresql', ssl_require=True)
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
