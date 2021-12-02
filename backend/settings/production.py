@@ -101,8 +101,9 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-db_from_env = dj_database_url.config(conn_max_age=600)
-DATABASES['default'].update(db_from_env)
+
+DATABASES['default'] = dj_database_url.config(
+    env='postgres://rbrdpyhintglrw:2d71ffb2e1c7ffcd820a78e6230e19e0d70128bce2bc90967bcce9fbfcd0acd2@ec2-44-199-40-188.compute-1.amazonaws.com:5432/d6d0cq9nmvoin8', conn_max_age=600, engine='django.db.backends.postgresql')
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

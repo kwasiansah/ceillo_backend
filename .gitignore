@@ -1,7 +1,6 @@
 
-/frontend
 .env
-/princepk.py
-/front
+princepk.py
+base.py
 ceillo.sqlite3
 /__pycache__
