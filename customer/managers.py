@@ -4,12 +4,15 @@ from django.contrib.auth.models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
 # TODO: check the use of the ugettext_lazy
 
+
 class CustomerManager(BaseUserManager):
-    
+
     def create_user(self, **data):
-        
-        if not data['email']:
-            raise ValueError(_('The Email Must Be Set'))
+        try:
+            if not data['email']:
+                raise ValueError(_('The Email Must Be Set'))
+        except KeyError as e:
+            raise ValueError('the email must be provided')
         # TODO: may also consider creating a check for the username field
         email = data.pop('email')
         email = self.normalize_email(email)
@@ -17,7 +20,7 @@ class CustomerManager(BaseUserManager):
         user.set_password(data['password'])
         user.save()
         return user
-    
+
     def create_superuser(self, **data):
         data.setdefault('is_staff', True)
         data.setdefault('is_superuser', True)

@@ -84,10 +84,21 @@ def user_detail(request):
     return Response(data, status.HTTP_200_OK)
 
 
-photo = openapi.Parameter('photo', openapi.IN_FORM, type=openapi.TYPE_FILE)
+photo = openapi.Parameter('photo', openapi.IN_FORM,
+                          type=openapi.TYPE_FILE, required=False)
+phone_number = openapi.Parameter(
+    'phone_number', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
+first_name = openapi.Parameter(
+    'first_name', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
+last_name = openapi.Parameter(
+    'last_name', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
+date_of_birth = openapi.Parameter(
+    'date_of_birth', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
+address = openapi.Parameter(
+    'address', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
 
 
-@swagger_auto_schema(methods=['put', 'patch'], manual_parameters=[photo])
+@swagger_auto_schema(methods=['put', 'patch'], manual_parameters=[photo, phone_number, first_name, last_name, date_of_birth, address])
 @ api_view(['PUT', 'PATCH'])
 @parser_classes([FormParser, MultiPartParser])
 @permission_classes([IsAuthenticated])
