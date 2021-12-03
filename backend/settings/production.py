@@ -30,9 +30,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '=%gglh9$vmlbah*d(o!6x+l%l60t%+q$m)w%vxtz2ag=m)q7sj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.8.100', 'ceillo-app.herokuapp.com']
+# ALLOWED_HOSTS = ['127.0.0.1', '192.168.8.100', 'ceillo-app.herokuapp.com']
+ALLOWED_HOSTS = ['*', ]
 
 # Application definition
 
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'corsheaders',
     'rest_framework_simplejwt',
+    'whitenoise.runserver_nostatic',
 ]
 
 MIDDLEWARE = [
@@ -63,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -87,7 +90,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
+HEROKU_POSTGRESQL_SILVER_URL = 'postgres://thxqbnvlxkhkcg:a2c9f14e349431a05d021be974fe67aa41ea4d11277e4bd52cf4ec482ffd0d0c@ec2-54-225-203-79.compute-1.amazonaws.com:5432/db6v7o71a1u6ub'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -101,7 +104,8 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-db_from_env = dj_database_url.config(conn_max_age=600)
+db_from_env = dj_database_url.config(
+    env=HEROKU_POSTGRESQL_SILVER_URL, conn_max_age=600)
 DATABASES['default'].update(db_from_env)
 
 # Password validation
@@ -153,6 +157,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.history.HistoryPanel',
