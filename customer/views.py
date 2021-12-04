@@ -134,8 +134,9 @@ def user_update(request):
 @swagger_auto_schema(method='post', request_body=CreateCustomerSerializer)
 @api_view(['POST'])
 def user_create(request):
+
     serializer = CreateCustomerSerializer(data=request.data)
-    if serializer.is_valid():
+    if serializer.is_valid(raise_exception=True):
         serializer.save()
         data = {
             'data': serializer.data,
@@ -172,12 +173,14 @@ def user_delete(request):
 def password_change(request):
     user = request.user
     serializer = CustomerPasswordChangeSerializer(user, data=request.data)
-    if serializer.is_valid():
+
+    if serializer.is_valid(raise_exception=True):
         serializer.save()
-    data = {
-        'message': "Password Successfully Changed"
-    }
-    return Response(data, status.HTTP_200_OK)
+        data = {
+            'message': "Password Successfully Changed"
+        }
+        return Response(data, status.HTTP_200_OK)
+    return Response({'message': 'Invalid Inputs'}, status.HTTP_400_BAD_REQUEST)
 
 
 @ api_view(['POST'])

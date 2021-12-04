@@ -30,7 +30,7 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Customer API",
+        title="Ceillo API'S",
         default_version='v1',
         description="Test description",
         terms_of_service="https://www.ceillo.com/policies/terms/",
@@ -59,4 +59,4 @@ urlpatterns = [
 
 handler404 = 'customer.utils.views.error_404'
 
-# handler500 = 'customer.utils.views.error_500'
+handler500 = 'customer.utils.views.error_500'

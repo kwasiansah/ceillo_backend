@@ -71,7 +71,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     photo = models.ImageField(upload_to='profile/', null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     # the terms field is for terms and conditions
-    agreed_to_terms = models.BooleanField(default=False)
+    agreed_to_terms = models.BooleanField()
 
     address = models.CharField(max_length=250, blank=True, null=False)
     objects = CustomerManager()
