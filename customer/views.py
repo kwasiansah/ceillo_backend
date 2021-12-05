@@ -5,7 +5,7 @@ from django.core.checks import messages
 from rest_framework.parsers import FileUploadParser, FormParser, JSONParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CreateCustomerSerializer, CustomerPasswordChangeSerializer, CustomerUserPasswordResetConfirmSerializer,  ListCustomerSerializer, MerchantSerializer, MyTokenObtainPairSerializer,  RetrieveCustomerSerializer, UpdateCustomerSerializer
+from .serializers import CreateCustomerSerializer, CustomerLogoutSerializer, CustomerPasswordChangeSerializer, CustomerUserPasswordResetConfirmSerializer,  ListCustomerSerializer, MerchantSerializer, MyTokenObtainPairSerializer,  RetrieveCustomerSerializer, UpdateCustomerSerializer
 from rest_framework.response import Response
 from .models import AuthToken, Customer, Merchant
 from rest_framework import request, viewsets, status
@@ -223,3 +223,18 @@ def user_password_reset_confirm(request):
         return Response(data, status.HTTP_200_OK)
     data['message'] = 'Password Reset Not Valid'
     return Response(data, status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def user_logout(request):
+    serializer = CustomerLogoutSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def user_merchant_create(request):
+    pass

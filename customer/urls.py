@@ -15,6 +15,7 @@ urlpatterns = [
          user_password_reset_confirm, name='password-reset-confirm'),
     path('login/', MyTokenObtainPairView.as_view(), name='login'),
     path('token-refresh/', TokenRefreshView.as_view(), name='token-refresh'),
+    path('logout/', user_logout, name='user_logout'),
 ]
 
 

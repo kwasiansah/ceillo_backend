@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import exceptions, serializers
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Customer, Merchant
@@ -204,5 +205,21 @@ class CustomerUserPasswordResetConfirmSerializer(serializers.Serializer):
         return instance
 
 
-data = {'email': 'mouse@gmail.com', 'password': 'prince', 'password2': 'princepk@123', 'first_name': 'mouse',
-        'last_name': 'ansah', 'address': 'accra', 'phone_number': '0200758003', 'date_of_birth': '29-12-2002', 'terms': True}
+# data = {'email': 'mouse@gmail.com', 'password': 'prince', 'password2': 'princepk@123', 'first_name': 'mouse',
+#         'last_name': 'ansah', 'address': 'accra', 'phone_number': '0200758003', 'date_of_birth': '29-12-2002', 'terms': True}
+class CustomerLogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField(required=True, write_only=True)
+
+    default_error_message = {
+        'invalid_token': ('Token Is Expired or Invalid')
+    }
+
+    def validate(self, attrs):
+        self.token = attrs['refresh']
+        return attrs
+
+    def save(self, **kwargs):
+        try:
+            RefreshToken(self.token).blacklist()
+        except TokenError:
+            self.fail('invalid_token')
