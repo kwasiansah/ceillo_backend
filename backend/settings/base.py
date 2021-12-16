@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '=%gglh9$vmlbah*d(o!6x+l%l60t%+q$m)w%vxtz2ag=m)q7sj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '192.168.8.100', 'ceillo-app.herokuapp.com']
 
@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'corsheaders',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -193,7 +194,7 @@ SIMPLE_JWT = {
 
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'customer_id',
+    'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
     'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
 
@@ -209,11 +210,12 @@ SIMPLE_JWT = {
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         # 'rest_framework.renderers.AdminRenderer',
-        'rest_framework.renderers.JSONRenderer',
         # 'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
 
     ),
     'EXCEPTION_HANDLER': 'customer.utils.exceptions.custom_exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'message',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
@@ -221,10 +223,11 @@ REST_FRAMEWORK = {
     ],
 }
 
-NON_FIELD_ERRORS_KEY = 'message'
+# NON_FIELD_ERRORS_KEY = 'message' not work needs to be in restframework
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR.parent, 'email')
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
@@ -234,3 +237,13 @@ EMAIL_HOST_PASSWORD = 'ceillo@123'
 
 # this defines the time it takes the token to expire
 EMAIL_RESET_TOKEN_TIMEOUT_MIN = 60
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTION": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }}
+
+}

@@ -1,21 +1,32 @@
+from .utils import constant
+from .utils.helper_func import generic_email
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
 from drf_yasg import openapi
-from django.core.checks import messages
-from rest_framework.parsers import FileUploadParser, FormParser, JSONParser, MultiPartParser
-from rest_framework.renderers import JSONRenderer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CreateCustomerSerializer, CustomerLogoutSerializer, CustomerPasswordChangeSerializer, CustomerUserPasswordResetConfirmSerializer,  ListCustomerSerializer, MerchantSerializer, MyTokenObtainPairSerializer,  RetrieveCustomerSerializer, UpdateCustomerSerializer
+from .serializers import (
+    CreateCustomerSerializer,
+    CreateMerchantSerializer,
+    CustomerLogoutSerializer,
+    CustomerPasswordChangeSerializer, CustomerUserPasswordResetConfirmSerializer,  ListCustomerSerializer,
+    MerchantSerializer,
+    MyTokenObtainPairSerializer,
+    RetrieveCustomerSerializer,
+    UpdateCustomerSerializer
+)
 from rest_framework.response import Response
 from .models import AuthToken, Customer, Merchant
 from rest_framework import request, viewsets, status
 from rest_framework.decorators import api_view, parser_classes, permission_classes, renderer_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
-from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework import exceptions
 from .utils.helper_func import create_token, authenticate_token, password_reset_email
+from rest_framework.generics import GenericAPIView
+from django.core.cache import cache
+from .permissions import IsLoggedOut
+from rest_framework.parsers import MultiPartParser, JSONParser
 
 
 class CustomerList(ListAPIView):
@@ -27,7 +38,7 @@ class CustomerList(ListAPIView):
 class CustomerRetrieve(RetrieveUpdateDestroyAPIView):
     queryset = Customer.objects.all()
     serializer_class = RetrieveCustomerSerializer
-    lookup_field = 'customer_id'
+    lookup_field = 'id'
 
 
 class CustomerCreate(CreateAPIView, ListAPIView):
@@ -66,14 +77,14 @@ def user_list(request):
     queryset = Customer.objects.all()
     serializer = ListCustomerSerializer(queryset, many=True)
     data = {
-        'data': [serializer.data],
+        'data': serializer.data,
         'message': 'list of all customers'
     }
     return Response(data, status.HTTP_200_OK)
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLoggedOut])
 def user_detail(request):
     user = request.user
     serializer = RetrieveCustomerSerializer(user)
@@ -84,23 +95,24 @@ def user_detail(request):
     return Response(data, status.HTTP_200_OK)
 
 
-photo = openapi.Parameter('photo', openapi.IN_FORM,
-                          type=openapi.TYPE_FILE, required=False)
-phone_number = openapi.Parameter(
-    'phone_number', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
-first_name = openapi.Parameter(
-    'first_name', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
-last_name = openapi.Parameter(
-    'last_name', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
-date_of_birth = openapi.Parameter(
-    'date_of_birth', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
-address = openapi.Parameter(
-    'address', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
+# photo = openapi.Parameter('photo', openapi.IN_FORM,
+#                           type=openapi.TYPE_FILE, required=False)
+# phone_number = openapi.Parameter(
+#     'phone_number', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
+# first_name = openapi.Parameter(
+#     'first_name', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
+# last_name = openapi.Parameter(
+#     'last_name', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
+# date_of_birth = openapi.Parameter(
+#     'date_of_birth', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
+# address = openapi.Parameter(
+#     'address', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
 
 
-@swagger_auto_schema(methods=['put', 'patch'], manual_parameters=[photo, phone_number, first_name, last_name, date_of_birth, address])
+# @swagger_auto_schema(methods=['put', 'patch'], manual_parameters=[photo, phone_number, first_name, last_name, date_of_birth, address])
+@swagger_auto_schema(methods=['put', 'patch'], request_body=UpdateCustomerSerializer)
 @ api_view(['PUT', 'PATCH'])
-@parser_classes([FormParser, MultiPartParser])
+@parser_classes([MultiPartParser, JSONParser])
 @permission_classes([IsAuthenticated])
 def user_update(request):
     user = request.user
@@ -136,6 +148,7 @@ def user_update(request):
 def user_create(request):
 
     serializer = CreateCustomerSerializer(data=request.data)
+    # when raise exception is true test password match needs change
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         data = {
@@ -143,11 +156,24 @@ def user_create(request):
             'token': serializer.validated_data['token'],
             'message': 'Sign Up Successfull',
         }
+        print('It got her')
+        token = create_token(serializer.instance, 60*5, 'verify')
+        user = serializer.instance
+        link = f"https://ceillo.netlify.app/verify-email/{token}/"
+        print(token)
+        temp_data = {'email': user.email,
+                     'first_name': user.first_name, 'link': link}
+        generic_email(user, constant.VERIFY_EMAIL_SUBJECT, link, settings.EMAIL_HOST_USER,
+                      [user.email], constant.VERIFY_EMAIL_TEMPLATE,  temp_data)
         return Response(data, status=status.HTTP_201_CREATED)
+    # message = serializer.errors['email']
+
     data = {
-        'errors': serializer.errors,
+        **serializer.errors,
+        # **message,
         'message': 'Sign Up Unsuccessfull'
     }
+
     return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -183,9 +209,14 @@ def password_change(request):
     return Response({'message': 'Invalid Inputs'}, status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(method='post', request_body=openapi.Schema(type=openapi.TYPE_OBJECT, required=['email'], properties={
+    'email': openapi.Schema(type=openapi.TYPE_STRING),
+}
+))
 @ api_view(['POST'])
 def user_password_reset(request):
     timeout = 60 * settings.EMAIL_RESET_TOKEN_TIMEOUT_MIN
+    # can place an exception for no email here
     try:
         user = Customer.objects.get(email=request.data['email'])
     except Customer.DoesNotExist:
@@ -231,10 +262,39 @@ def user_logout(request):
     serializer = CustomerLogoutSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    token = request.auth.__str__()
+    email = request.user.email
+    key = f'{email[:email.index("@")]}_token'
+    cache.set(key, token, timeout=20)
+    return Response(data={'message': 'Logged Out Successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+
+@swagger_auto_schema(method='post', request_body=CreateMerchantSerializer)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def user_merchant_create(request):
+
+    if Merchant.objects.filter(customer=request.user).exists():
+        return Response({'message': 'User Is Allready A Merchant'}, status.HTTP_400_BAD_REQUEST)
+    print(Merchant.objects.all())
+    serializer = CreateMerchantSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(customer=request.user)
+        data = {
+            'message': 'Merchant Account Successfully Created'
+        }
+        return Response(data=data, status=status.HTTP_201_CREATED)
+    else:
+        return Response({'message': 'invalid data'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def user_merchant_create(request):
-    pass
+def verify_email(request):
+    user = request.user
+    token = request.data['token']
+    usr = authenticate_token(token)
+    if usr == user:
+        user.verified_email = True
+        user.save()
+        return Response({'message': 'Email Successfully Verified'})

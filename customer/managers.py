@@ -2,6 +2,8 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from rest_framework import status
+from rest_framework.exceptions import ValidationError
 # TODO: check the use of the ugettext_lazy
 
 
@@ -14,8 +16,12 @@ class CustomerManager(BaseUserManager):
         except KeyError as e:
             raise ValueError('the email must be provided')
         # TODO: may also consider creating a check for the username field
+        data.setdefault('is_active', True)
         email = data.pop('email')
         email = self.normalize_email(email)
+        if '@' not in email:
+            raise ValidationError(
+                {'message': 'invalid email'}, status.HTTP_500_INTERNAL_SERVER_ERROR)
         user = self.model(email=email, **data)
         user.set_password(data['password'])
         user.save()

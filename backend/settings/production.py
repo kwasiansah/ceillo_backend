@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'whitenoise.runserver_nostatic',
     'rest_framework_simplejwt.token_blacklist',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
@@ -201,7 +202,7 @@ SIMPLE_JWT = {
 
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'customer_id',
+    'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
     'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
 
@@ -217,11 +218,12 @@ SIMPLE_JWT = {
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         # 'rest_framework.renderers.AdminRenderer',
-        'rest_framework.renderers.JSONRenderer',
         # 'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
 
     ),
     'EXCEPTION_HANDLER': 'customer.utils.exceptions.custom_exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'message',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
@@ -241,3 +243,14 @@ EMAIL_HOST_PASSWORD = 'ceillo@123'
 
 # this defines the time it takes the token to expire
 EMAIL_RESET_TOKEN_TIMEOUT_MIN = 60
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        # "LOCATION": "redis://127.0.0.1:6379/1",
+        'LOCATION': 'redis://:pb9c635f068b47844b4edf6b9862de8ccbfc0140407593ee79ddf2d5c1885199d@ec2-34-226-88-29.compute-1.amazonaws.com:18699',
+        "OPTION": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }}
+
+}

@@ -18,7 +18,7 @@ class UserCreationForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ('photo', 'email', 'phone_number', 'first_name', 'last_name',
-                  'password', 'agreed_to_terms', 'is_staff', 'is_superuser', 'status',)
+                  'password', 'agreed_to_terms', 'is_staff', 'is_superuser', 'status', 'verified_email')
 
     def clean_password2(self):
 
@@ -46,7 +46,7 @@ class UserChangeForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ('photo', 'email', 'phone_number', 'first_name', 'last_name',
-                  'password', 'agreed_to_terms', 'is_staff', 'is_superuser', 'status',)
+                  'password', 'agreed_to_terms', 'is_staff', 'is_active', 'is_superuser', 'status', 'verified_email')
 
 
 class UserAdmin(BaseUserAdmin):
@@ -54,21 +54,21 @@ class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
-    list_display = ('email', 'customer_id',  'is_superuser')
+    list_display = ('email', 'id',  'is_superuser', 'is_active')
     list_filter = ('is_superuser',)
     fieldsets = (
         (None, {'fields': ('email', 'password',
          'phone_number', 'agreed_to_terms')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'photo')}),
-        ('Permissions', {'fields': ('status', 'is_superuser',
-         'is_staff', 'user_permissions', 'groups')}),
+        ('Permissions', {'fields': ('verified_email', 'status', 'is_superuser',
+         'is_staff', 'is_active', 'user_permissions', 'groups')}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'phone_number', 'first_name', 'last_name',  'is_superuser', 'is_staff', 'status', 'password1', 'password2', 'photo', 'agreed_to_terms'),
+            'fields': ('email', 'phone_number', 'first_name', 'last_name', 'verified_email', 'is_superuser', 'is_staff', 'is_active', 'status', 'password1', 'password2', 'photo', 'agreed_to_terms'),
         }),
     )
     search_fields = ('email',)
@@ -89,7 +89,7 @@ admin.site.register(Customer, UserAdmin)
 
 @admin.register(Merchant)
 class AdminMerchant(admin.ModelAdmin):
-    pass
+    list_display = ['brand', 'id', 'id_card_type']
 
 
 @admin.register(AuthToken)

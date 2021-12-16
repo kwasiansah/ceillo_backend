@@ -36,6 +36,8 @@ def create_token(user, time, type):
     token.save()
     return token
 
+# check if tokens are deleted after authentication in view or here
+
 
 def authenticate_token(token):
 
@@ -45,6 +47,7 @@ def authenticate_token(token):
         raise exceptions.APIException(
             {'message': 'Invalid Token'}, status.HTTP_403_FORBIDDEN)
     if Token.key != token:
+        # change this to invalid token later on
         raise serializers.ValidationError(
             {'error': "token do not match"}, status.HTTP_400_BAD_REQUEST)
     timenow = timezone.now()
@@ -78,7 +81,7 @@ def password_reset_email(user, token):
     to = [user.email]
 
     html_content = render_to_string(
-        'email.html', {'first_name': user.first_name, 'email': user.email, 'link': link})
+        'password_reset_email.html', {'first_name': user.first_name, 'email': user.email, 'link': link})
     text_content = strip_tags(html_content)
     email = EmailMultiAlternatives(
         subject,
@@ -86,6 +89,15 @@ def password_reset_email(user, token):
         sender,
         to
     )
+    email.attach_alternative(html_content, 'text/html')
+    email.send()
+    return user.email.upper()
+
+
+def generic_email(user, subject, link, sender, to, template_name, template_data):
+    html_content = render_to_string(template_name, template_data)
+    text_content = strip_tags(html_content)
+    email = EmailMultiAlternatives(subject, text_content, sender, to)
     email.attach_alternative(html_content, 'text/html')
     email.send()
     return user.email.upper()

@@ -4,3 +4,7 @@ princepk.py
 base.py
 ceillo.sqlite3
 /__pycache__
+/email
+backend/media/products/video/vscode-2021-09-30_12.57.39.mp4
+/migrations/
+/migrations/**

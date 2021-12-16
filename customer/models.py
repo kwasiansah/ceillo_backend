@@ -11,74 +11,72 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from .managers import CustomerManager
 from django.db.models.signals import pre_save
 from rest_framework.authtoken.models import Token
-# Create your models here.
 
-# class Customer(models.Model): # TODO: create the uuid field
-# class ACTIVE_CHOICES(Enum):
-#     active = ('AC', 'status',)
-#     remove = ('RM', 'Removed',)
-
-#     @classmethod
-#     def get_value(cls, member):
-#         return cls[member].value[0]
-
-#     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=False, null=False, unique=True, related_name='customer')
-
-#     status = models.CharField(max_length=2, choices=[x.value for x in ACTIVE_CHOICES] , default='AC')
-#     photo = models.ImageField(upload_to='profile/' , null=True, blank=True)
-#     address = models.CharField(max_length=250, blank=True)
-#     created = models.DateTimeField(auto_now_add=True)
-
-
-#     def __str__(self):
-#         return self.user.username
 
 class Customer(AbstractBaseUser, PermissionsMixin):
     # TODO: over write the is_active field to get extra control over who logs in
     class ACTIVE_CHOICES(Enum):
-        active = ('AC', 'status',)
-        remove = ('RM', 'Removed',)
+        active = (
+            "AC",
+            "status",
+        )
+        remove = (
+            "RM",
+            "Removed",
+        )
 
         @classmethod
         def get_value(cls, member):
             return cls[member].value[0]
-    customer_id = models.UUIDField(
-        default=uuid.uuid4, editable=False, blank=False, null=False, db_index=True, unique=True)
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        blank=False,
+        null=False,
+        db_index=True,
+        unique=True,
+    )
     is_staff = models.BooleanField(default=False)
     # thinking about making the defalt RM
-    status = models.CharField(max_length=2, choices=[
-                              x.value for x in ACTIVE_CHOICES], default='AC')
+    status = models.CharField(
+        max_length=2, choices=[x.value for x in ACTIVE_CHOICES], default="AC"
+    )
     # first name required
     is_active = models.BooleanField(default=True)
     first_name = models.CharField(
-        _('first name'), max_length=150, blank=True, default="")
+        _("first name"), max_length=150, blank=True, default=""
+    )
     # last name required
     last_name = models.CharField(
-        _('last name'), max_length=150, blank=False, null=False)
+        _("last name"), max_length=150, blank=False, null=False
+    )
     # email required
     email = models.EmailField(
-        _('email address'), blank=False, null=False, unique=True)
-    USERNAME_FIELD = 'email'
-    EMAIL_FIELD = 'email'
+        _("email address"), blank=False, null=False, unique=True)
+    USERNAME_FIELD = "email"
+    EMAIL_FIELD = "email"
     # TODO: create a validator for the phone_number
-    '''
+    """
     TODO:
     i did not set unique to true because a user can decide to create multiple accounts with the same number
-    '''
+    """
     phone_number = models.CharField(max_length=10)
     date_of_birth = models.CharField(max_length=11, blank=False)
 
-    photo = models.ImageField(upload_to='profile/', null=True, blank=True)
+    photo = models.ImageField(upload_to="profile/", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     # the terms field is for terms and conditions
-    agreed_to_terms = models.BooleanField()
+    agreed_to_terms = models.BooleanField(default=False)
 
     address = models.CharField(max_length=250, blank=True, null=False)
+    verified_email = models.BooleanField(default=False)
     objects = CustomerManager()
 
     class Meta:
-        verbose_name = _('Customer')
-        verbose_name_plural = _('Customers')
+        verbose_name = _("Customer")
+        verbose_name_plural = _("Customers")
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         # TODO: i would have to set this up later
@@ -97,14 +95,42 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
 class Merchant(models.Model):
     # decide wheter to preserve mechant details even after delete
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE,
-                                    null=False, blank=False, unique=True, related_name='merchant')
-    name = models.CharField(
-        max_length=250, help_text='The merchant name you would want to use')
-    id_char = models.UUIDField(default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        db_index=True,
+        null=False,
+    )
+
+    CARD_TYPES = (
+        ("national", "National"),
+        ("driver", "Driver"),
+        ("student", "Student"),
+        ("voter", "Voter"),
+    )
+
+    customer = models.OneToOneField(
+        Customer,
+        on_delete=models.CASCADE,
+        null=False,
+        blank=False,
+        unique=True,
+        related_name="merchant",
+    )
+    brand = models.CharField(
+        max_length=250, help_text="The merchant name you would want to use"
+    )
+    # Todo change this null to false
+    id_card = models.ImageField(upload_to="merchant/", null=True, blank=False)
+    id_card_type = models.CharField(
+        default="Student", choices=CARD_TYPES, max_length=8)
+
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return self.brand
 
 
 """ 
@@ -120,11 +146,15 @@ pre_save.connect(Passwordhasher, sender=Customer)
 
 class AuthToken(Token):
     # i would add the editable attribute later
-    key = models.CharField(_('Key'), max_length=40,
-                           db_index=True, unique=True, editable=False)
+    key = models.CharField(
+        _("Key"), max_length=40, db_index=True, unique=True, editable=False
+    )
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, related_name='auth_token',
-        on_delete=models.CASCADE, verbose_name=_("customer"))
+        settings.AUTH_USER_MODEL,
+        related_name="auth_token",
+        on_delete=models.CASCADE,
+        verbose_name=_("customer"),
+    )
 
     expire = models.DateTimeField()
     type = models.CharField(max_length=250, default="")

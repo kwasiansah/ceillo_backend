@@ -16,6 +16,8 @@ urlpatterns = [
     path('login/', MyTokenObtainPairView.as_view(), name='login'),
     path('token-refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('logout/', user_logout, name='user_logout'),
+    path('create-merchant/', user_merchant_create, name='user-merchant-create'),
+    path('verify-email', verify_email, name='verify-email')
 ]
 
 

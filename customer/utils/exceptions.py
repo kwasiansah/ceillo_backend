@@ -20,8 +20,9 @@ def custom_exception_handler(exc, context):
                 'message': 'No Active Accounts'
             }
             return response
-        response.data['status_code'] = response.status_code
-        response.data['code'] = 500
+
+        # response.data['status_code'] = int(response.status_code)
+        # response.data['code'] = 500
 
     exception_class = exc.__class__.__name__
     if exception_class in handlers:

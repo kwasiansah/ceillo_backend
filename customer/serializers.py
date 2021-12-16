@@ -6,14 +6,24 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Customer, Merchant
 from rest_framework import status
+from django.utils import timezone
 
 User = get_user_model()
 
 
 class MerchantSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Merchant
-        fields = ['name', 'id_char']
+        fields = ['id', 'brand', 'id_card', 'id_card_type']
+        depth = 1
+
+
+class CreateMerchantSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Merchant
+        fields = ['brand', 'id_card', 'id_card_type']
 
 
 class ListCustomerSerializer(serializers.ModelSerializer):
@@ -29,8 +39,8 @@ class RetrieveCustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ["id", "customer_id", 'photo', 'email', 'phone_number', 'first_name', 'last_name',
-                  'date_of_birth', 'address', 'agreed_to_terms', 'merchant', 'is_superuser', 'is_active', 'is_staff', 'status']
+        fields = ["id", 'photo', 'email', 'phone_number', 'first_name', 'last_name',
+                  'date_of_birth', 'address', 'agreed_to_terms', 'merchant', 'is_superuser', 'is_active', 'is_staff', 'status', 'last_login']
 
 
 class UpdateCustomerSerializer(serializers.ModelSerializer):
@@ -153,7 +163,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-
+        user.last_login = timezone.now()
+        user.save()
         token['first_name'] = user.first_name
 
         return token
@@ -210,16 +221,16 @@ class CustomerUserPasswordResetConfirmSerializer(serializers.Serializer):
 class CustomerLogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField(required=True, write_only=True)
 
-    default_error_message = {
-        'invalid_token': ('Token Is Expired or Invalid')
-    }
-
     def validate(self, attrs):
-        self.token = attrs['refresh']
+        self.refresh_token = attrs['refresh']
+
         return attrs
 
     def save(self, **kwargs):
         try:
-            RefreshToken(self.token).blacklist()
+
+            RefreshToken(self.refresh_token).blacklist()
+
         except TokenError:
-            self.fail('invalid_token')
+            serializers.ValidationError(
+                {'message': 'Not Logged Out'}, status.HTTP_400_BAD_REQUEST)
