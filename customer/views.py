@@ -156,7 +156,7 @@ def user_create(request):
             'token': serializer.validated_data['token'],
             'message': 'Sign Up Successfull',
         }
-        print('It got her')
+
         token = create_token(serializer.instance, 60*5, 'verify')
         user = serializer.instance
         link = f"https://ceillo.netlify.app/verify-email/{token}/"

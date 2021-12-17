@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '=%gglh9$vmlbah*d(o!6x+l%l60t%+q$m)w%vxtz2ag=m)q7sj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # ALLOWED_HOSTS = ['127.0.0.1', '192.168.8.100', 'ceillo-app.herokuapp.com']
 ALLOWED_HOSTS = ['*', ]

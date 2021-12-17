@@ -25,6 +25,7 @@ class AdminCollection(admin.ModelAdmin):
 
 @admin.register(Category)
 class AdminCategory(admin.ModelAdmin):
+    print('category')
     prepopulated_fields = {'url_slug': ('name',)}
     readonly_fields = ["thumbnail_image"]
 
@@ -43,14 +44,17 @@ class AdminCategory(admin.ModelAdmin):
 class AdminProduct(admin.ModelAdmin):
     prepopulated_fields = {'url_slug': ('name',)}
     readonly_fields = ["thumbnail_image"]
+    filter_horizontal = ('category', 'media')
 
     def thumbnail_image(self, obj):
+        url = obj.media.all()[0].raw_image.url if obj.media.first() else " "
+        print(url)
+        vid = obj.media.all()[0].video.url if obj.media.first() else ""
+        print(vid)
 
         return mark_safe('<img src="{url}" width="{width}" height={height} /><br><video src="{vid}"   autoplay controls  width=400, height=400></video>'.format(
-            url=obj.media.all()[0].raw_image.url,
-            # width=obj.thumbnail.width,
-            # height=obj.thumbnail.height,
-            vid=obj.media.all()[0].video.url,
+            url=url,
+            vid=vid,
             width=200,
             height=200,
         ))

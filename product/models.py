@@ -165,11 +165,12 @@ class Product(models.Model):
 
     def __repr__(self) -> str:
         class_ = type(self)
-        return "%s(pk=%r, name=%r, category=%r)" % (
+        return "%s(pk=%r, name=%r)" % (
             class_.__name__,
             self.pk,
             self.name,
-            self.category.all(),
+
+
         )
 
     def save(self, *args, **kwargs):

@@ -30,7 +30,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductMediaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductMedia
-        fields = ['raw_image', 'thumbnail']
+        fields = ['raw_image', 'thumbnail', 'video']
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
@@ -43,6 +43,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             'product_id', 'name', 'url_slug', 'media', 'brand', 'price',
             'description', 'long_description', 'in_stock', 'active', 'category', 'merchant', 'rating']
         read_only_fields = ['category', 'merchant']
+    # work on the media option
 
     def create(self, validated_data):
         category = self.initial_data['category']
@@ -54,6 +55,12 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         product = Product.objects.create(**validated_data)
         product.category.add(category)
         product.save()
+        if not validated_data.pop('media', False):
+            media = ProductMedia()
+            media.save()
+            product.media.add(media)
+            product.save()
+
         return product
 
 
