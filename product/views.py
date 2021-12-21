@@ -116,18 +116,28 @@ class ProductReviewViewSet(viewsets.ModelViewSet):
 # Create your views here.
 
 
-@swagger_auto_schema(methods=['post'], request_body=ProductCreateSerializer)
-@api_view(['GET', 'POST'])
+# @swagger_auto_schema(methods=['post'], request_body=ProductCreateSerializer)
+# @api_view(['GET', 'POST'])
+# @permission_classes([IsAuthenticated, IsMerchant])
+# def postproduct(request):
+#     if request.method == 'GET':
+#         queryset = Category.objects.all()
+#         print(queryset)
+#         serializer = CategorySerializer(queryset, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#     # TODO: prevent multiple products with the same product
+#     if request.method == 'POST':
+#         serializer = ProductCreateSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save(merchant=request.user.merchant)
+#         return Response(serializer.data)
+
+
+@swagger_auto_schema(method='post', request_body=ProductCreateSerializer)
+@api_view(['POST'])
 @permission_classes([IsAuthenticated, IsMerchant])
 def postproduct(request):
-    if request.method == 'GET':
-        queryset = Category.objects.all()
-        print(queryset)
-        serializer = CategorySerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    # TODO: prevent multiple products with the same product
-    if request.method == 'POST':
-        serializer = ProductCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(merchant=request.user.merchant)
-        return Response(serializer.data)
+    serializer = ProductCreateSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(merchant=request.user.merchant)
+    return Response(serializer.data)

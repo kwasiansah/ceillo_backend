@@ -82,6 +82,8 @@ def user_list(request):
     }
     return Response(data, status.HTTP_200_OK)
 
+# TODO:add Isloggedout permission to authenticated views
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsLoggedOut])
@@ -275,12 +277,13 @@ def user_logout(request):
 def user_merchant_create(request):
 
     if Merchant.objects.filter(customer=request.user).exists():
-        return Response({'message': 'User Is Allready A Merchant'}, status.HTTP_400_BAD_REQUEST)
+        return Response({'message': 'User Is Already A Merchant'}, status.HTTP_400_BAD_REQUEST)
     print(Merchant.objects.all())
     serializer = CreateMerchantSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         serializer.save(customer=request.user)
         data = {
+            'merchant': serializer.data,
             'message': 'Merchant Account Successfully Created'
         }
         return Response(data=data, status=status.HTTP_201_CREATED)

@@ -38,6 +38,8 @@ ALLOWED_HOSTS = ['127.0.0.1', '192.168.8.100', 'ceillo-app.herokuapp.com']
 INSTALLED_APPS = [
     'product.apps.ProductConfig',
     'customer.apps.CustomerConfig',
+    'admin_interface',
+    'colorfield',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -91,14 +93,23 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'ceillo.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'ceillo.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ceillo',
+        'USER': 'ceillo',
+        'PASSWORD': 'ceillo@123',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -247,3 +258,5 @@ CACHES = {
         }}
 
 }
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SILENCED_SYSTEM_CHECKS = ['security.W019']

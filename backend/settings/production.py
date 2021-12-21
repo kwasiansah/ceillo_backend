@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'rest_framework_simplejwt.token_blacklist',
     'django_cleanup.apps.CleanupConfig',
+    'admin_interface',
+    'colorfield',
 ]
 
 MIDDLEWARE = [
@@ -254,3 +256,5 @@ CACHES = {
         }}
 
 }
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SILENCED_SYSTEM_CHECKS = ['security.W019']

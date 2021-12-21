@@ -11,7 +11,7 @@ class Collection(models.Model):
     name = models.CharField(max_length=MAX_LENGTH, null=False)
     url_slug = models.SlugField()
     thumbnail = models.ImageField(
-        upload_to='Collection/', default="default/default.jpg")
+        upload_to='collection/', default="default/default.jpg")
     description = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=False)
@@ -87,35 +87,6 @@ class Category(models.Model):
 #         return self.name
 
 
-class ProductMedia(models.Model):
-    """ 
-    would create a more dynamic location when images have been hosted
-    """
-    raw_image = models.ImageField(
-        upload_to='products/', default='default/default.jpg')
-    thumbnail = models.ImageField(
-        upload_to='products/thumbnail/', null=True, blank=True)
-    main_image = models.BooleanField(default=False)
-    video = models.FileField(
-        upload_to='products/video/', null=True, blank=True)
-    created = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ('-created',)
-        verbose_name = 'Product Media'
-        verbose_name_plural = 'Product Media'
-
-    def __str__(self):
-        return self.raw_image.name
-
-    def save(self, *args, **kwargs):
-        if 'default' in self.raw_image.name:
-            print('default image used')
-        else:
-            print('thumbnail was created')
-        super().save(*args, **kwargs)
-
-
 class Product(models.Model):
 
     product_id = models.UUIDField(
@@ -126,7 +97,8 @@ class Product(models.Model):
     url_slug = models.SlugField(default="")  # TODO: work on the slug field
     # this image field would later be given its own model for normalization
     # TODO: i would remove the reverse relationship from the media field
-    media = models.ManyToManyField(ProductMedia, related_name='product')
+
+    # media = models.ManyToManyField(ProductMedia, related_name='product')
 
     brand = models.CharField(max_length=250)
 
@@ -176,6 +148,39 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         self.url_slug = get_url_slug(self.name)
         print(self.url_slug)
+        super().save(*args, **kwargs)
+
+
+class ProductMedia(models.Model):
+    """ 
+    would create a more dynamic location when images have been hosted
+    """
+    # TODO: remember to change to null = False later
+
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, null=True, blank=False, related_name='media')
+    raw_image = models.ImageField(
+        upload_to='products/', default='default/default.jpg')
+    thumbnail = models.ImageField(
+        upload_to='products/thumbnail/', null=True, blank=True)
+    main_image = models.BooleanField(default=False)
+    video = models.FileField(
+        upload_to='products/video/', null=True, blank=True, default='default/defaultvid.mp4')
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created',)
+        verbose_name = 'Product Media'
+        verbose_name_plural = 'Product Media'
+
+    def __str__(self):
+        return self.raw_image.name
+
+    def save(self, *args, **kwargs):
+        if 'default' in self.raw_image.name:
+            print('default image used')
+        else:
+            print('thumbnail was created')
         super().save(*args, **kwargs)
 
 

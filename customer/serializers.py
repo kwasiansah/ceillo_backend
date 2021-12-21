@@ -15,15 +15,16 @@ class MerchantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Merchant
-        fields = ['id', 'brand', 'id_card', 'id_card_type']
-        depth = 1
+        # fields = ['id', 'brand', 'id_card', 'id_card_type']
+        fields = '__all__'
 
 
 class CreateMerchantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Merchant
-        fields = ['brand', 'id_card', 'id_card_type']
+        fields = '__all__'
+        read_only_fields = ['customer']
 
 
 class ListCustomerSerializer(serializers.ModelSerializer):
@@ -39,8 +40,7 @@ class RetrieveCustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ["id", 'photo', 'email', 'phone_number', 'first_name', 'last_name',
-                  'date_of_birth', 'address', 'agreed_to_terms', 'merchant', 'is_superuser', 'is_active', 'is_staff', 'status', 'last_login']
+        fields = '__all__'
 
 
 class UpdateCustomerSerializer(serializers.ModelSerializer):
@@ -48,6 +48,8 @@ class UpdateCustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = ['photo', 'phone_number', 'first_name', 'last_name',
                   'date_of_birth', 'address', ]
+        read_only_fields = ['id', 'email', 'is_active', 'status', 'last_login',
+                            'created', 'is_staff', 'verified_email', 'agreed_to_terms']
 
 
 # class CreateCustomerSerializer(TokenObtainPairSerializer):
@@ -128,10 +130,7 @@ class CreateCustomerSerializer(serializers.Serializer):
     def create(self, validated_data):
 
         password2 = validated_data.pop('password2')
-
         user = User.objects.create_user(**validated_data)
-        user.is_active = True
-        user.status = 'AC'
         user.set_password(password2)
         user.save()
 

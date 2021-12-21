@@ -1,4 +1,6 @@
+from django.utils.safestring import mark_safe
 from django.contrib import admin
+from django.contrib.auth.models import Group
 from .models import AuthToken, Customer, Merchant
 from django import forms
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -56,12 +58,15 @@ class UserAdmin(BaseUserAdmin):
 
     list_display = ('email', 'id',  'is_superuser', 'is_active')
     list_filter = ('is_superuser',)
+    readonly_fields = ('last_login', 'thumbnail_image')
+
     fieldsets = (
         (None, {'fields': ('email', 'password',
          'phone_number', 'agreed_to_terms')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'photo')}),
+        ('Personal info', {'fields': ('first_name',
+         'last_name', 'photo', 'last_login')}),
         ('Permissions', {'fields': ('verified_email', 'status', 'is_superuser',
-         'is_staff', 'is_active', 'user_permissions', 'groups')}),
+         'is_staff', 'is_active', 'user_permissions', 'groups', 'thumbnail_image')}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
@@ -73,7 +78,17 @@ class UserAdmin(BaseUserAdmin):
     )
     search_fields = ('email',)
     ordering = ('email',)
-    filter_horizontal = ()
+    filter_horizontal = ('user_permissions', 'groups')
+
+    def thumbnail_image(self, obj):
+
+        return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
+            url=obj.photo.url,
+            # width=obj.thumbnail.width,
+            # height=obj.thumbnail.height,
+            width=200,
+            height=200,
+        ))
 
 
 # Now register the new UserAdmin...
@@ -90,6 +105,17 @@ admin.site.register(Customer, UserAdmin)
 @admin.register(Merchant)
 class AdminMerchant(admin.ModelAdmin):
     list_display = ['brand', 'id', 'id_card_type']
+    readonly_fields = ('thumbnail_image',)
+
+    def thumbnail_image(self, obj):
+
+        return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
+            url=obj.id_card.url,
+            # width=obj.thumbnail.width,
+            # height=obj.thumbnail.height,
+            width=200,
+            height=200,
+        ))
 
 
 @admin.register(AuthToken)

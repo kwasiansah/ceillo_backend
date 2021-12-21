@@ -14,20 +14,27 @@ from rest_framework.authtoken.models import Token
 
 
 class Customer(AbstractBaseUser, PermissionsMixin):
-    # TODO: over write the is_active field to get extra control over who logs in
-    class ACTIVE_CHOICES(Enum):
-        active = (
-            "AC",
-            "status",
-        )
-        remove = (
-            "RM",
-            "Removed",
-        )
+    class STATUS_CHOICES(models.TextChoices):
+        ACTIVE = ("ACTIVE", "Active")
+        REMOVED = ("REMOVED", "Removed")
 
-        @classmethod
-        def get_value(cls, member):
-            return cls[member].value[0]
+    class ADDRESS_CHOICES(models.TextChoices):
+        KNUST = ("KNUST", "Knust")
+        UG = ("UG", "UG")
+
+    # class ACTIVE_CHOICES(Enum):
+    #     active = (
+    #         "AC",
+    #         "status",
+    #     )
+    #     remove = (
+    #         "RM",
+    #         "Removed",
+    #     )
+
+    #     @classmethod
+    #     def get_value(cls, member):
+    #         return cls[member].value[0]
 
     id = models.UUIDField(
         primary_key=True,
@@ -41,7 +48,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     # thinking about making the defalt RM
     status = models.CharField(
-        max_length=2, choices=[x.value for x in ACTIVE_CHOICES], default="AC"
+        max_length=7, choices=STATUS_CHOICES.choices, default=STATUS_CHOICES.ACTIVE
     )
     # first name required
     is_active = models.BooleanField(default=True)
@@ -53,8 +60,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         _("last name"), max_length=150, blank=False, null=False
     )
     # email required
-    email = models.EmailField(
-        _("email address"), blank=False, null=False, unique=True)
+    email = models.EmailField(_("email address"), blank=False, null=False, unique=True)
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
     # TODO: create a validator for the phone_number
@@ -70,7 +76,9 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     # the terms field is for terms and conditions
     agreed_to_terms = models.BooleanField(default=False)
 
-    address = models.CharField(max_length=250, blank=True, null=False)
+    address = models.CharField(
+        max_length=250, blank=True, null=False, choices=ADDRESS_CHOICES.choices
+    )
     verified_email = models.BooleanField(default=False)
     objects = CustomerManager()
 
@@ -95,6 +103,19 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
 class Merchant(models.Model):
     # decide wheter to preserve mechant details even after delete
+    class CARD_TYPES(models.TextChoices):
+        NATIONAL = ("National", "National")
+        DRIVER = ("Driver", "Driver")
+        STUDENT = ("Student", "Student")
+        VOTER = ("Voter", "Voter")
+
+    # CARD_TYPES = (
+    #     ("National", "National"),
+    #     ("Driver", "Driver"),
+    #     ("Student", "Student"),
+    #     ("Voter", "Voter"),
+    # )
+
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -102,13 +123,6 @@ class Merchant(models.Model):
         unique=True,
         db_index=True,
         null=False,
-    )
-
-    CARD_TYPES = (
-        ("national", "National"),
-        ("driver", "Driver"),
-        ("student", "Student"),
-        ("voter", "Voter"),
     )
 
     customer = models.OneToOneField(
@@ -125,23 +139,15 @@ class Merchant(models.Model):
     # Todo change this null to false
     id_card = models.ImageField(upload_to="merchant/", null=True, blank=False)
     id_card_type = models.CharField(
-        default="Student", choices=CARD_TYPES, max_length=8)
+        default=CARD_TYPES.STUDENT, choices=CARD_TYPES.choices, max_length=8
+    )
 
     created = models.DateTimeField(auto_now_add=True)
 
+    updated = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return self.brand
-
-
-""" 
-this can be used for hashing passwords befor being saved
-def Passwordhasher(sender, instance, **kwargs):
-    user = instance
-    user.set_password(user.password)
-    
-pre_save.connect(Passwordhasher, sender=Customer)
-
-"""
 
 
 class AuthToken(Token):

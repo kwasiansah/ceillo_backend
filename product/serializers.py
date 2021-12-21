@@ -11,9 +11,7 @@ class CollectionSerializer(serializers.ModelSerializer):
         model = Collection
         # fields = '__all__'
 
-        fields = [
-            'name', 'url_slug', 'thumbnail', 'description', 'active', 'updated'
-        ]
+        fields = '__all__'
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -22,15 +20,13 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         # fields = '__all__'
-        fields = [
-            'name', 'url_slug', 'thumbnail', 'description', 'active', 'collection', 'updated'
-        ]
+        fields = '__all__'
 
 
 class ProductMediaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductMedia
-        fields = ['raw_image', 'thumbnail', 'video']
+        fields = '__all__'
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
@@ -39,9 +35,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
 
-        fields = [
-            'product_id', 'name', 'url_slug', 'media', 'brand', 'price',
-            'description', 'long_description', 'in_stock', 'active', 'category', 'merchant', 'rating']
+        fields = '__all__'
         read_only_fields = ['category', 'merchant']
     # work on the media option
 
@@ -56,10 +50,8 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         product.category.add(category)
         product.save()
         if not validated_data.pop('media', False):
-            media = ProductMedia()
+            media = ProductMedia(product=product)
             media.save()
-            product.media.add(media)
-            product.save()
 
         return product
 
@@ -70,8 +62,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['product_id', 'name', 'url_slug', 'media', 'brand', 'price', 'description',
-                  'long_description', 'in_stock', 'active', 'merchant', 'category']
+        fields = '__all__'
 
         depth = 1
 
@@ -82,8 +73,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['product_id', 'name', 'url_slug', 'media', 'brand', 'price', 'description',
-                  'long_description', 'in_stock', 'active', 'merchant', 'category', 'questions', 'rating']
+        fields = '__all__'
 
 
 class ProductQuestionSerializer(serializers.ModelSerializer):
@@ -92,8 +82,7 @@ class ProductQuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductQuestion
-        fields = ['question', 'product', 'active',
-                  'created', 'customer', 'updated']
+        fields = '__all__'
 
 
 class ProductAnswerSerializer(serializers.ModelSerializer):
@@ -101,8 +90,7 @@ class ProductAnswerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductAnswer
-        fields = ['answer', 'question', 'voting',
-                  'customer', 'created', 'updated', 'active']
+        fields = '__all__'
 
 
 class ProductReviewsSerializer(serializers.ModelSerializer):
@@ -110,7 +98,6 @@ class ProductReviewsSerializer(serializers.ModelSerializer):
     # customer = CustomerSerializer()
     class Meta:
         model = ProductReviews
-        fields = ['image', 'review', 'customer',
-                  'product', 'active', 'created', 'updated']
+        fields = '__all__'
 
 # TODO: try the depth meta attribute in serializers

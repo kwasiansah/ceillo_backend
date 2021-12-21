@@ -6,6 +6,14 @@ ceillo.sqlite3
 /__pycache__
 /__pycache__/**
 /email
-backend/media/products/video/vscode-2021-09-30_12.57.39.mp4
+
 /migrations/
 /migrations/**
+
+backend/media/Category
+backend/media/Collection
+backend/media/collection
+backend/media/merchant
+backend/media/products
+backend/media/profile
+backend/media/reviews

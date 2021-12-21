@@ -43,14 +43,14 @@ def test_post_product(client, db, login_details):
     print(response.data)
 
 
-def test_post_product_get_method(client, db, login_details):
-    endpoint = reverse('post-product')
-    merchant = {'brand': 'mistubishi'}
-    user = User.objects.get(email='thomas@gmail.com')
-    merchant = Merchant.objects.create(**merchant, customer=user)
-    category = Category.objects.create(
-        name='toys', description='description', active=True)
+# def test_post_product_get_method(client, db, login_details):
+#     endpoint = reverse('post-product')
+#     merchant = {'brand': 'mistubishi'}
+#     user = User.objects.get(email='thomas@gmail.com')
+#     merchant = Merchant.objects.create(**merchant, customer=user)
+#     category = Category.objects.create(
+#         name='toys', description='description', active=True)
 
-    response = client.get(path=endpoint, HTTP_AUTHORIZATION='Bearer ' +
-                          login_details[0], content_type='application/json')
-    print(response.data)
+#     response = client.get(path=endpoint, HTTP_AUTHORIZATION='Bearer ' +
+#                           login_details[0], content_type='application/json')
+#     print(response.data)

@@ -10,6 +10,7 @@ from rest_framework.exceptions import ValidationError
 class CustomerManager(BaseUserManager):
 
     def create_user(self, **data):
+        # Redundant try except statement would remove later if verified
         try:
             if not data['email']:
                 raise ValueError(_('The Email Must Be Set'))
@@ -30,7 +31,7 @@ class CustomerManager(BaseUserManager):
     def create_superuser(self, **data):
         data.setdefault('is_staff', True)
         data.setdefault('is_superuser', True)
-        data.setdefault('status', 'AC')
+        data.setdefault('status', 'ACTIVE')
         if data.get('is_staff') is not True:
             raise ValueError(_('Superuser must have is_staff=True.'))
         if data.get('is_superuser') is not True:
