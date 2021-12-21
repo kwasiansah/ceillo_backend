@@ -37,6 +37,8 @@ ALLOWED_HOSTS = ['*', ]
 INSTALLED_APPS = [
     'product.apps.ProductConfig',
     'customer.apps.CustomerConfig',
+    'admin_interface',
+    'colorfield',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,8 +54,6 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'rest_framework_simplejwt.token_blacklist',
     'django_cleanup.apps.CleanupConfig',
-    'admin_interface',
-    'colorfield',
 ]
 
 MIDDLEWARE = [
