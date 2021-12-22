@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+from debug_toolbar.middleware import *
 from datetime import timedelta
 from pathlib import Path
 import os
@@ -176,7 +177,8 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.redirects.RedirectsPanel',
     'debug_toolbar.panels.profiling.ProfilingPanel',
 ]
-
+# # setting this to true would show the debug_toolbar no matter the internal_ips can change it to function
+# SHOW_TOOLBAR_CALLBACK = True
 INTERNAL_IPS = [
     '127.0.0.1'
 ]

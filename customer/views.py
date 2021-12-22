@@ -89,7 +89,7 @@ def user_list(request):
 @permission_classes([IsAuthenticated, IsLoggedOut])
 def user_detail(request):
     user = request.user
-    serializer = RetrieveCustomerSerializer(user)
+    serializer = RetrieveCustomerSerializer(user, context={'request': request})
     data = {
         'data': serializer.data,
         'message': 'customer details'
@@ -105,13 +105,12 @@ def user_detail(request):
 #     'first_name', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
 # last_name = openapi.Parameter(
 #     'last_name', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
-# date_of_birth = openapi.Parameter(
-#     'date_of_birth', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
-# address = openapi.Parameter(
-#     'address', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
+
+# university = openapi.Parameter(
+#     'university', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
 
 
-# @swagger_auto_schema(methods=['put', 'patch'], manual_parameters=[photo, phone_number, first_name, last_name, date_of_birth, address])
+# @swagger_auto_schema(methods=['put', 'patch'], manual_parameters=[photo, phone_number, first_name, last_name, university])
 @swagger_auto_schema(methods=['put', 'patch'], request_body=UpdateCustomerSerializer)
 @ api_view(['PUT', 'PATCH'])
 @parser_classes([MultiPartParser, JSONParser])

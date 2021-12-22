@@ -18,7 +18,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         ACTIVE = ("ACTIVE", "Active")
         REMOVED = ("REMOVED", "Removed")
 
-    class ADDRESS_CHOICES(models.TextChoices):
+    class UNIVERSITY_CHOICES(models.TextChoices):
         KNUST = ("KNUST", "Knust")
         UG = ("UG", "UG")
 
@@ -60,7 +60,8 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         _("last name"), max_length=150, blank=False, null=False
     )
     # email required
-    email = models.EmailField(_("email address"), blank=False, null=False, unique=True)
+    email = models.EmailField(
+        _("email address"), blank=False, null=False, unique=True)
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
     # TODO: create a validator for the phone_number
@@ -69,15 +70,15 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     i did not set unique to true because a user can decide to create multiple accounts with the same number
     """
     phone_number = models.CharField(max_length=10)
-    date_of_birth = models.CharField(max_length=11, blank=False)
+    #  = models.CharField(max_length=11, blank=False)
 
     photo = models.ImageField(upload_to="profile/", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     # the terms field is for terms and conditions
     agreed_to_terms = models.BooleanField(default=False)
 
-    address = models.CharField(
-        max_length=250, blank=True, null=False, choices=ADDRESS_CHOICES.choices
+    university = models.CharField(
+        max_length=5, blank=True, null=False, choices=UNIVERSITY_CHOICES.choices
     )
     verified_email = models.BooleanField(default=False)
     objects = CustomerManager()
@@ -99,6 +100,12 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     #     if commit:
     #         user.save()
     #     return user
+
+
+class Address(models.Model):
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
+    hostel = models.CharField(max_length=250, null=True, blank=True)
+    room_number = models.CharField(max_length=10, null=True, blank=True)
 
 
 class Merchant(models.Model):
@@ -164,6 +171,7 @@ class AuthToken(Token):
 
     expire = models.DateTimeField()
     type = models.CharField(max_length=250, default="")
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.key

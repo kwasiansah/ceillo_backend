@@ -15,7 +15,6 @@ class MerchantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Merchant
-        # fields = ['id', 'brand', 'id_card', 'id_card_type']
         fields = '__all__'
 
 
@@ -28,7 +27,6 @@ class CreateMerchantSerializer(serializers.ModelSerializer):
 
 
 class ListCustomerSerializer(serializers.ModelSerializer):
-    merchant = MerchantSerializer(read_only=True, required=False)
 
     class Meta:
         model = Customer
@@ -36,18 +34,33 @@ class ListCustomerSerializer(serializers.ModelSerializer):
 
 
 class RetrieveCustomerSerializer(serializers.ModelSerializer):
-    merchant = MerchantSerializer(read_only=True, required=False)
+    photo = serializers.SerializerMethodField()
 
     class Meta:
         model = Customer
         fields = '__all__'
+        depth = 1
+
+    def photo_url(self, obj):
+        try:
+            url = obj.photo.url
+        except ValueError:
+            url = '/media/default/default.jpg'
+        return url
+
+    def get_photo(self, obj):
+
+        request = self.context['request']
+        image_url = self.photo_url(obj)
+        url = request.build_absolute_uri(location=image_url)
+        return url
 
 
 class UpdateCustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ['photo', 'phone_number', 'first_name', 'last_name',
-                  'date_of_birth', 'address', ]
+                  'university', ]
         read_only_fields = ['id', 'email', 'is_active', 'status', 'last_login',
                             'created', 'is_staff', 'verified_email', 'agreed_to_terms']
 
@@ -55,10 +68,10 @@ class UpdateCustomerSerializer(serializers.ModelSerializer):
 # class CreateCustomerSerializer(TokenObtainPairSerializer):
 #     password2 = serializers.CharField(write_only=True)
 #     phone_number = serializers.CharField(required=True)
-#     date_of_birth = serializers.CharField(required=True)
+#      = serializers.CharField(required=True)
 #     first_name = serializers.CharField(required=True)
 #     last_name = serializers.CharField(required=True)
-#     address = serializers.CharField(required=True)
+#    university = serializers.CharField(required=True)
 #     agreed_to_terms = serializers.BooleanField(required=True)
 
 #     def validate_(self, attrs):
@@ -106,9 +119,9 @@ class CreateCustomerSerializer(serializers.Serializer):
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
     phone_number = serializers.CharField(required=True)
-    address = serializers.CharField(required=True)
+    university = serializers.CharField(required=True)
     agreed_to_terms = serializers.BooleanField(required=True)
-    date_of_birth = serializers.CharField(required=True)
+    #  = serializers.CharField(required=True)
 
     def validate_email(self, email):
         try:
@@ -215,8 +228,6 @@ class CustomerUserPasswordResetConfirmSerializer(serializers.Serializer):
         return instance
 
 
-# data = {'email': 'mouse@gmail.com', 'password': 'prince', 'password2': 'princepk@123', 'first_name': 'mouse',
-#         'last_name': 'ansah', 'address': 'accra', 'phone_number': '0200758003', 'date_of_birth': '29-12-2002', 'terms': True}
 class CustomerLogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField(required=True, write_only=True)
 

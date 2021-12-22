@@ -1,3 +1,4 @@
+from django.forms.formsets import DEFAULT_MAX_NUM
 from django.utils.safestring import mark_safe
 from django.contrib import admin
 from django.contrib.auth.models import Group
@@ -20,7 +21,7 @@ class UserCreationForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ('photo', 'email', 'phone_number', 'first_name', 'last_name',
-                  'password', 'agreed_to_terms', 'is_staff', 'is_superuser', 'status', 'verified_email')
+                  'password', 'agreed_to_terms', 'is_staff', 'is_superuser', 'status', 'university', 'verified_email')
 
     def clean_password2(self):
 
@@ -48,7 +49,7 @@ class UserChangeForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ('photo', 'email', 'phone_number', 'first_name', 'last_name',
-                  'password', 'agreed_to_terms', 'is_staff', 'is_active', 'is_superuser', 'status', 'verified_email')
+                  'password', 'agreed_to_terms', 'is_staff', 'is_active', 'is_superuser', 'status', 'university', 'verified_email')
 
 
 class UserAdmin(BaseUserAdmin):
@@ -64,7 +65,7 @@ class UserAdmin(BaseUserAdmin):
         (None, {'fields': ('email', 'password',
          'phone_number', 'agreed_to_terms')}),
         ('Personal info', {'fields': ('first_name',
-         'last_name', 'photo', 'last_login')}),
+         'last_name', 'photo', 'last_login', 'university')}),
         ('Permissions', {'fields': ('verified_email', 'status', 'is_superuser',
          'is_staff', 'is_active', 'user_permissions', 'groups', 'thumbnail_image')}),
     )
@@ -73,19 +74,18 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'phone_number', 'first_name', 'last_name', 'verified_email', 'is_superuser', 'is_staff', 'is_active', 'status', 'password1', 'password2', 'photo', 'agreed_to_terms'),
+            'fields': ('email', 'phone_number', 'first_name', 'last_name', 'university', 'verified_email', 'is_superuser', 'is_staff', 'is_active', 'status', 'password1', 'password2', 'photo', 'agreed_to_terms'),
         }),
     )
     search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ('user_permissions', 'groups')
 
+    @admin.display(description='profile image')
     def thumbnail_image(self, obj):
 
         return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
             url=obj.photo.url,
-            # width=obj.thumbnail.width,
-            # height=obj.thumbnail.height,
             width=200,
             height=200,
         ))
@@ -105,14 +105,12 @@ admin.site.register(Customer, UserAdmin)
 @admin.register(Merchant)
 class AdminMerchant(admin.ModelAdmin):
     list_display = ['brand', 'id', 'id_card_type']
-    readonly_fields = ('thumbnail_image',)
+    readonly_fields = ('id_card_image',)
 
-    def thumbnail_image(self, obj):
-
+    def id_card_image(self, obj):
         return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
             url=obj.id_card.url,
-            # width=obj.thumbnail.width,
-            # height=obj.thumbnail.height,
+
             width=200,
             height=200,
         ))
@@ -120,4 +118,4 @@ class AdminMerchant(admin.ModelAdmin):
 
 @admin.register(AuthToken)
 class AdminAuthToken(admin.ModelAdmin):
-    pass
+    list_display = ['user', 'type', 'created']

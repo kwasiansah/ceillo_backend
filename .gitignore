@@ -17,3 +17,5 @@ backend/media/merchant
 backend/media/products
 backend/media/profile
 backend/media/reviews
+**.pyc
+manage.py

@@ -20,10 +20,10 @@ class CustomerTestCase(TestCase):
         email = 'testing@gmail.com'
         phone_number = '0200843453'
         agreed_to_terms = True
-        address = 'Oyibi'
+        university = 'Oyibi'
         date_of_birth = '30-6-1943'
         user_a = User(first_name=first_name, last_name=last_name, email=email, phone_number=phone_number,
-                      agreed_to_terms=agreed_to_terms, address=address, date_of_birth=date_of_birth)
+                      agreed_to_terms=agreed_to_terms, university=university, date_of_birth=date_of_birth)
         user_a.is_active = True
         user_a.is_staff = True
         user_a.is_superuser = True

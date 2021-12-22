@@ -17,8 +17,8 @@ password = 'password'
 
 @pytest.fixture(scope='session')
 def user_detail():
-    data = {'email': 'testing@gmail.com', 'password': 'password', 'first_name': 'test', 'last_name': 'unit', 'address': 'Oyibi', 'phone_number': '0200758003',
-            'date_of_birth': '29-12-2002', 'agreed_to_terms': True, 'is_active': True, 'is_staff': True, 'is_superuser': True, 'status': 'AC'}
+    data = {'email': 'testing@gmail.com', 'password': 'password', 'first_name': 'test', 'last_name': 'unit', 'university': 'KNUST',
+            'phone_number': '0200758003', 'agreed_to_terms': True, 'is_active': True, 'is_staff': True, 'is_superuser': True, 'status': 'ACTIVE', 'verified_email': True}
     return data
 
 
@@ -29,11 +29,11 @@ def create_user(user_detail, django_db_blocker):
     # email = 'testing@gmail.com'
     # phone_number = '0200843453'
     # agreed_to_terms = True
-    # address = 'Oyibi'
-    # date_of_birth = '30-6-1943'
+    # university = 'KNUST'
+    #  = '30-6-1943'
     # password = 'password'
     # user_a = User.objects.create_user(first_name=first_name, password=password, last_name=last_name, email=email, phone_number=phone_number,
-    #                                   agreed_to_terms=agreed_to_terms, address=address, date_of_birth=date_of_birth)
+    #                                   agreed_to_terms=agreed_to_terms, university=university, =)
     # user_a.is_active = True
     # user_a.is_staff = True
     # user_a.is_superuser = True
@@ -150,7 +150,7 @@ def test_password_change(login_details, client, django_db_blocker):
 
 def test_create_field_required(db, client):
     data = {'emai': 'mouse@gmail.com', 'password': 'prince', 'password2': 'princepk@123', 'first_name': 'mouse',
-            'last_name': 'ansah', 'address': 'accra', 'phone_number': '0200758003', 'date_of_birth': '29-12-2002', 'terms': True}
+            'last_name': 'ansah', 'university': 'KNUST', 'phone_number': '0200758003', 'terms': True}
     create = reverse('user_create')
     response = client.post(path=create, data=data)
     print(response.data)
@@ -160,7 +160,7 @@ def test_create_field_required(db, client):
 def test_create_password_do_match(django_db_blocker, client):
     with django_db_blocker.unblock():
         data = {'email': 'mouse@gmail.com', 'password': 'prince', 'password2': 'princepk@123', 'first_name': 'mouse',
-                'last_name': 'ansah', 'address': 'accra', 'phone_number': '0200758003', 'date_of_birth': '29-12-2002', 'terms': True}
+                'last_name': 'ansah', 'university': 'KNUST', 'phone_number': '0200758003', 'terms': True}
         create = reverse('user_create')
         response = client.post(path=create, data=data)
 
@@ -172,7 +172,7 @@ def test_create_password_do_match(django_db_blocker, client):
 def test_create_email_already_exits(django_db_blocker, client):
     with django_db_blocker.unblock():
         data = {'email': 'testing@gmail.com', 'password': 'prince', 'password2': 'princepk@123', 'first_name': 'mouse',
-                'last_name': 'ansah', 'address': 'accra', 'phone_number': '0200758003', 'date_of_birth': '29-12-2002', 'terms': True}
+                'last_name': 'ansah', 'university': 'KNUST', 'phone_number': '0200758003', 'terms': True}
         create = reverse('user_create')
         response = client.post(path=create, data=data)
     print(response.data)
@@ -183,7 +183,7 @@ def test_create_email_already_exits(django_db_blocker, client):
 def test_create_successfull(django_db_blocker, client):
     with django_db_blocker.unblock():
         data = {'email': 'mouse@gmail.com', 'password': 'princepk@123', 'password2': 'princepk@123', 'first_name': 'mouse',
-                'last_name': 'ansah', 'address': 'accra', 'phone_number': '0200758003', 'date_of_birth': '29-12-2002', 'agreed_to_terms': True}
+                'last_name': 'ansah', 'university': 'KNUST', 'phone_number': '0200758003', 'agreed_to_terms': True}
         create = reverse('user_create')
         response = client.post(path=create, data=data)
     print(response.data)
@@ -196,7 +196,7 @@ def test_create_successfull(django_db_blocker, client):
 
 def test_create_unseccessfull(db, client):
     data = {'email': "t", 'password': 'princepk@123', 'password2': 'princepk@123', 'first_name': 'mouse',
-            'last_name': 'ansah', 'address': 'accra', 'phone_number': '0200758003', 'date_of_birth': '29-12-2002', 'agreed_to_terms': True}
+            'last_name': 'ansah', 'university': 'KNUST', 'phone_number': '0200758003', 'agreed_to_terms': True}
     create = reverse('user_create')
     response = client.post(path=create, data=data)
     print(response.data)
