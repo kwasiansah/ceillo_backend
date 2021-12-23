@@ -1,8 +1,8 @@
-from customer.models import Merchant
 import pytest
-from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 
+from customer.models import Merchant
 from product.models import Category
 
 User = get_user_model()

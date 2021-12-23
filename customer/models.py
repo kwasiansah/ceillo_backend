@@ -1,16 +1,18 @@
+import uuid
+from enum import Enum
+
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.db import models
-from enum import Enum
-from django.contrib.auth.models import User, PermissionsMixin
-import uuid
-from django.urls import reverse
-from django.core.mail.message import EmailMessage
-from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import PermissionsMixin, User
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from .managers import CustomerManager
+from django.core.mail.message import EmailMessage
+from django.db import models
 from django.db.models.signals import pre_save
+from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.models import Token
+
+from .managers import CustomerManager
 
 
 class Customer(AbstractBaseUser, PermissionsMixin):

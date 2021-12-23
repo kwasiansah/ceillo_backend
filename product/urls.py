@@ -1,14 +1,9 @@
-from rest_framework.routers import DefaultRouter
-from .views import (
-    CollectionViewSet,
-    CategoryViewSet,
-    ProductViewSet,
-    ProductQuestionViewSet,
-    ProductAnswerViewSet,
-    ProductReviewViewSet,
-    postproduct,
-)
 from django.urls import path
+from rest_framework.routers import DefaultRouter
+
+from .views import (CategoryViewSet, CollectionViewSet, ProductAnswerViewSet,
+                    ProductQuestionViewSet, ProductReviewViewSet,
+                    ProductViewSet, postproduct)
 
 router = DefaultRouter()
 router.register(r"Collection", CollectionViewSet, basename="Collection")

@@ -1,19 +1,19 @@
-from django.shortcuts import render
-from django.utils.html import strip_tags
-from django.template.loader import render_to_string
-from django.core.mail import EmailMultiAlternatives
-from django.core.mail import send_mail
-from django.conf import settings
+from datetime import timedelta
+
 import jwt
 import pytz
-from datetime import timedelta
-from django.utils import timezone
-from rest_framework import serializers, status
-from rest_framework import exceptions
-from rest_framework.response import Response
-from rest_framework.exceptions import AuthenticationFailed
-from customer.models import AuthToken, Customer
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives, send_mail
 from django.db.utils import IntegrityError
+from django.shortcuts import render
+from django.template.loader import render_to_string
+from django.utils import timezone
+from django.utils.html import strip_tags
+from rest_framework import exceptions, serializers, status
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.response import Response
+
+from customer.models import AuthToken, Customer
 
 
 def expire(time):

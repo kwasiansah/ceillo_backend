@@ -1,13 +1,14 @@
-from django.forms.formsets import DEFAULT_MAX_NUM
-from django.utils.safestring import mark_safe
-from django.contrib import admin
-from django.contrib.auth.models import Group
-from .models import AuthToken, Customer, Merchant
 from django import forms
+from django.contrib import admin
+from django.contrib.auth import authenticate
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
-from django.contrib.auth import authenticate
+from django.forms.formsets import DEFAULT_MAX_NUM
+from django.utils.safestring import mark_safe
+
+from .models import AuthToken, Customer, Merchant
 
 # this is only for testing
 

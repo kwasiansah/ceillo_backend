@@ -1,41 +1,26 @@
-from product.permissions import IsMerchant
 from re import T
-from rest_framework import viewsets
-from rest_framework import serializers
-from rest_framework.serializers import Serializer
-from rest_framework.viewsets import ModelViewSet
-from rest_framework import status
+
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.generics import (GenericAPIView, ListAPIView,
+                                     ListCreateAPIView, RetrieveAPIView,
+                                     RetrieveUpdateDestroyAPIView)
+from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 from rest_framework.views import APIView
-from .serializers import (
-    ProductAnswerSerializer,
-    CollectionSerializer,
-    CategorySerializer,
-    ProductCreateSerializer,
-    ProductQuestionSerializer,
-    ProductSerializer,
-    ProductReviewsSerializer,
-)
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework.mixins import ListModelMixin
-from rest_framework.generics import (
-    GenericAPIView,
-    ListAPIView,
-    ListCreateAPIView,
-    RetrieveAPIView,
-    RetrieveUpdateDestroyAPIView,
-)
-from .models import (
-    Category,
-    Collection,
-    ProductAnswer,
-    ProductQuestion,
-    Product,
-    ProductReviews,
-)
+from rest_framework.viewsets import ModelViewSet
 
+from product.permissions import IsMerchant
+
+from .models import (Category, Collection, Product, ProductAnswer,
+                     ProductQuestion, ProductReviews)
+from .serializers import (CategorySerializer, CollectionSerializer,
+                          ProductAnswerSerializer, ProductCreateSerializer,
+                          ProductQuestionSerializer, ProductReviewsSerializer,
+                          ProductSerializer)
 
 # class CollectionViewSet(ListCreateAPIView, RetrieveUpdateDestroyAPIView):
 #     queryset = Collection.objects.all()

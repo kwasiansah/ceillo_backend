@@ -1,6 +1,7 @@
-from rest_framework.permissions import BasePermission
-from customer.models import Merchant
 from django.core.cache import cache
+from rest_framework.permissions import BasePermission
+
+from customer.models import Merchant
 
 
 class IsMerchant(BasePermission):

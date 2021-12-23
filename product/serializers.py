@@ -1,16 +1,10 @@
 from django.db.models.fields.related import RelatedField
 from rest_framework import serializers
-from .models import (
-    ProductMedia,
-    Collection,
-    Category,
-    Product,
-    ProductQuestion,
-    ProductReviews,
-    ProductAnswer,
-)
 
 from customer.serializers import ListCustomerSerializer
+
+from .models import (Category, Collection, Product, ProductAnswer,
+                     ProductMedia, ProductQuestion, ProductReviews)
 
 
 class CollectionSerializer(serializers.ModelSerializer):

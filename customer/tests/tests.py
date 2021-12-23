@@ -1,12 +1,13 @@
 import json
-from django.test import TestCase, Client
+
+from django.conf import settings
+from django.contrib.auth import authenticate, get_user_model
+from django.test import Client, TestCase
 from django.urls import reverse
 from rest_framework import status
-from customer.models import Customer
-from django.contrib.auth import authenticate
-from django.conf import settings
-from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase, force_authenticate
+
+from customer.models import Customer
 
 User = get_user_model()
 

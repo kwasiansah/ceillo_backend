@@ -1,5 +1,5 @@
-from rest_framework.permissions import BasePermission
 from django.core.cache import cache
+from rest_framework.permissions import BasePermission
 
 
 class IsLoggedOut(BasePermission):

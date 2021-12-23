@@ -1,43 +1,30 @@
-from .utils import constant
-from .utils.helper_func import generic_email
-from drf_yasg.utils import swagger_auto_schema
+from django.conf import settings
+from django.core.cache import cache
 from django.utils.decorators import method_decorator
 from drf_yasg import openapi
-from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import (
-    CreateCustomerSerializer,
-    CreateMerchantSerializer,
-    CustomerLogoutSerializer,
-    CustomerPasswordChangeSerializer,
-    CustomerUserPasswordResetConfirmSerializer,
-    ListCustomerSerializer,
-    MerchantSerializer,
-    MyTokenObtainPairSerializer,
-    RetrieveCustomerSerializer,
-    UpdateCustomerSerializer,
-)
-from rest_framework.response import Response
-from .models import AuthToken, Customer, Merchant
-from rest_framework import request, viewsets, status
-from rest_framework.decorators import (
-    api_view,
-    parser_classes,
-    permission_classes,
-    renderer_classes,
-)
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import exceptions, request, status, viewsets
+from rest_framework.decorators import (api_view, parser_classes,
+                                       permission_classes, renderer_classes)
+from rest_framework.generics import (CreateAPIView, GenericAPIView,
+                                     ListAPIView, RetrieveUpdateDestroyAPIView)
+from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import (
-    CreateAPIView,
-    ListAPIView,
-    RetrieveUpdateDestroyAPIView,
-)
-from django.conf import settings
-from rest_framework import exceptions
-from .utils.helper_func import create_token, authenticate_token, password_reset_email
-from rest_framework.generics import GenericAPIView
-from django.core.cache import cache
+from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+from .models import AuthToken, Customer, Merchant
 from .permissions import IsLoggedOut
-from rest_framework.parsers import MultiPartParser, JSONParser
+from .serializers import (CreateCustomerSerializer, CreateMerchantSerializer,
+                          CustomerLogoutSerializer,
+                          CustomerPasswordChangeSerializer,
+                          CustomerUserPasswordResetConfirmSerializer,
+                          ListCustomerSerializer, MerchantSerializer,
+                          MyTokenObtainPairSerializer,
+                          RetrieveCustomerSerializer, UpdateCustomerSerializer)
+from .utils import constant
+from .utils.helper_func import (authenticate_token, create_token,
+                                generic_email, password_reset_email)
 
 
 class CustomerList(ListAPIView):

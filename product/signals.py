@@ -1,9 +1,11 @@
 from io import BytesIO
 from typing import ByteString
-from PIL import Image
+
 from django.core.files.base import ContentFile
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from PIL import Image
+
 from .models import Product
 
 THUMBNAIL_SIZE = (300, 300)

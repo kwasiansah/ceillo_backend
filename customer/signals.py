@@ -1,6 +1,7 @@
 from django.db.models.signals import pre_save
-from .models import Customer
 from django.utils import timezone
+
+from .models import Customer
 
 
 def Passwordhasher(sender, instance, **kwargs):

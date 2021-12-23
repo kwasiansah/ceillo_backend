@@ -1,5 +1,6 @@
-import uuid
 import hashlib
+import uuid
+
 from django.utils import timezone
 
 

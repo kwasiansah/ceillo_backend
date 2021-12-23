@@ -1,10 +1,12 @@
-from customer.models import Merchant
 import json
-from django.urls import reverse
+
+import pytest
 from django.contrib.auth import get_user_model
 from django.test.client import Client
-import pytest
+from django.urls import reverse
 from rest_framework import serializers
+
+from customer.models import Merchant
 
 User = get_user_model()
 ################################################################

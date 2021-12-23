@@ -1,12 +1,12 @@
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import exceptions, serializers
+from rest_framework import exceptions, serializers, status
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from .models import Customer, Merchant
-from rest_framework import status
-from django.utils import timezone
 
 User = get_user_model()
 

@@ -1,8 +1,10 @@
-from django.db.models.fields import related
-from product.utils.helper_func import get_url_slug
-from django.db import models
 import uuid
+
+from django.db import models
+from django.db.models.fields import related
+
 from customer.models import Customer, Merchant
+from product.utils.helper_func import get_url_slug
 
 # Create your models here.
 MAX_LENGTH = 1000
