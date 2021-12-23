@@ -5,7 +5,7 @@ from django.utils import timezone
 
 def get_unique_id():
     hasher = hashlib.md5()
-    hasher.update(bytes(str(timezone.now()), encoding='utf8'))
+    hasher.update(bytes(str(timezone.now()), encoding="utf8"))
     id = hasher.hexdigest()[:12]
     return id
 
@@ -28,7 +28,7 @@ def get_product_image(obj):
         url = obj.media.all()[0].raw_image.url
     except IndexError:
         url = "/media/default/default.jpg"
-    print('this', url)
+    print("this", url)
     try:
 
         vid = obj.media.all()[0].video.url

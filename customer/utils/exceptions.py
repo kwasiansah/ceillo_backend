@@ -3,22 +3,20 @@ from rest_framework.views import exception_handler
 
 def custom_exception_handler(exc, context):
     print(str(exc))
-    print(str(context['view']))
+    print(str(context["view"]))
 
     handlers = {
-        'ValidationError': _handle_generic_error,
-        'Http404': _handle_generic_error,
-        'PermissionDenied': _handle_generic_error,
-        'NotAuthenticated': _handle_authentication_error,
-        'InvalidToken': _handle_invalid,
+        "ValidationError": _handle_generic_error,
+        "Http404": _handle_generic_error,
+        "PermissionDenied": _handle_generic_error,
+        "NotAuthenticated": _handle_authentication_error,
+        "InvalidToken": _handle_invalid,
     }
 
     response = exception_handler(exc, context)
     if response is not None:
-        if 'MyTokenObtainPairView' in str(context['view']) and exc.status_code == 401:
-            response.data = {
-                'message': 'No Active Accounts'
-            }
+        if "MyTokenObtainPairView" in str(context["view"]) and exc.status_code == 401:
+            response.data = {"message": "No Active Accounts"}
             return response
 
         # response.data['status_code'] = int(response.status_code)
@@ -31,9 +29,7 @@ def custom_exception_handler(exc, context):
 
 
 def _handle_authentication_error(exc, context, response):
-    response.data = {
-        'message': 'Please Login To Proceed'
-    }
+    response.data = {"message": "Please Login To Proceed"}
     return response
 
 

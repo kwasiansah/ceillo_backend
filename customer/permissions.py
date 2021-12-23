@@ -3,7 +3,6 @@ from django.core.cache import cache
 
 
 class IsLoggedOut(BasePermission):
-
     def has_permission(self, request, view):
         email = request.user.email
         key = f'{email[:email.index("@")]}_token'

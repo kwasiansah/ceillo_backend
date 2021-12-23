@@ -8,31 +8,41 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('customer', '0003_auto_20211222_2022'),
+        ("customer", "0003_auto_20211222_2022"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='customer',
-            old_name='address',
-            new_name='university',
+            model_name="customer",
+            old_name="address",
+            new_name="university",
         ),
-
         migrations.AlterField(
-            model_name='authtoken',
-            name='created',
+            model_name="authtoken",
+            name="created",
             field=models.DateTimeField(auto_now_add=True),
         ),
         migrations.CreateModel(
-            name='Address',
+            name="Address",
             fields=[
-                ('id', models.BigAutoField(auto_created=True,
-                 primary_key=True, serialize=False, verbose_name='ID')),
-                ('hostel', models.CharField(blank=True, max_length=250, null=True)),
-                ('room_number', models.CharField(
-                    blank=True, max_length=10, null=True)),
-                ('customer', models.OneToOneField(
-                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("hostel", models.CharField(blank=True, max_length=250, null=True)),
+                ("room_number", models.CharField(blank=True, max_length=10, null=True)),
+                (
+                    "customer",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

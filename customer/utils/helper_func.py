@@ -24,17 +24,16 @@ def create_token(user, time, type):
     print(user)
     # integrity error
     try:
-        token = AuthToken.objects.create(
-            user=user, expire=expire(time), type=type)
+        token = AuthToken.objects.create(user=user, expire=expire(time), type=type)
     except IntegrityError:
 
         token = AuthToken.objects.get(user=user)
         token.delete()
-        token = AuthToken.objects.create(
-            user=user, expire=expire(time), type=type)
+        token = AuthToken.objects.create(user=user, expire=expire(time), type=type)
         # raise serializers.ValidationError({'error': 'email already sent'})
     token.save()
     return token
+
 
 # check if tokens are deleted after authentication in view or here
 
@@ -45,51 +44,58 @@ def authenticate_token(token):
         Token = AuthToken.objects.get(key=token)
     except AuthToken.DoesNotExist:
         raise exceptions.APIException(
-            {'message': 'Invalid Token'}, status.HTTP_403_FORBIDDEN)
+            {"message": "Invalid Token"}, status.HTTP_403_FORBIDDEN
+        )
     if Token.key != token:
         # change this to invalid token later on
         raise serializers.ValidationError(
-            {'error': "token do not match"}, status.HTTP_400_BAD_REQUEST)
+            {"error": "token do not match"}, status.HTTP_400_BAD_REQUEST
+        )
     timenow = timezone.now()
 
     timenow = timenow.replace(tzinfo=pytz.utc)
 
     if Token.expire < timenow:
         raise serializers.ValidationError(
-            {'error': 'Token exp'}, status.HTTP_403_FORBIDDEN)
+            {"error": "Token exp"}, status.HTTP_403_FORBIDDEN
+        )
 
     return Token.user
 
 
 def payload(request):
-    print('hi')
+    print("hi")
     try:
-        payload = jwt.decode(request,
-                             key=settings.SIMPLE_JWT['SIGNING_KEY'], algorithms=['HS256'])
+        payload = jwt.decode(
+            request, key=settings.SIMPLE_JWT["SIGNING_KEY"], algorithms=["HS256"]
+        )
     except jwt.exceptions.DecodeError:
-        raise AuthenticationFailed({'detail': 'token not provided'})
+        raise AuthenticationFailed({"detail": "token not provided"})
     return payload
 
 
 def password_reset_email(user, token):
     link = f"https://ceillo.netlify.app/password-reset-confirm/{token}/"
 
-    subject = 'Your password reset '
+    subject = "Your password reset "
 
     sender = settings.EMAIL_HOST_USER
-
+    # remember to make this link dynamic
+    logo_link = "https://ceillo-app.herokuapp.com/media/default/ceillo.svg"
     to = [user.email]
 
     html_content = render_to_string(
-        'password_reset_email.html', {'first_name': user.first_name, 'email': user.email, 'link': link})
-    text_content = strip_tags(html_content)
-    email = EmailMultiAlternatives(
-        subject,
-        text_content,
-        sender,
-        to
+        "password_reset_email.html",
+        {
+            "first_name": user.first_name,
+            "email": user.email,
+            "link": link,
+            "logo_link": logo_link,
+        },
     )
-    email.attach_alternative(html_content, 'text/html')
+    text_content = strip_tags(html_content)
+    email = EmailMultiAlternatives(subject, text_content, sender, to)
+    email.attach_alternative(html_content, "text/html")
     email.send()
     return user.email.upper()
 
@@ -98,6 +104,6 @@ def generic_email(user, subject, link, sender, to, template_name, template_data)
     html_content = render_to_string(template_name, template_data)
     text_content = strip_tags(html_content)
     email = EmailMultiAlternatives(subject, text_content, sender, to)
-    email.attach_alternative(html_content, 'text/html')
+    email.attach_alternative(html_content, "text/html")
     email.send()
     return user.email.upper()

@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('product', '0001_initial'),
+        ("product", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='productmedia',
-            name='video',
-            field=models.FileField(blank=True, default='default/defaultvid.mp4', null=True, upload_to='products/video/'),
+            model_name="productmedia",
+            name="video",
+            field=models.FileField(
+                blank=True,
+                default="default/defaultvid.mp4",
+                null=True,
+                upload_to="products/video/",
+            ),
         ),
     ]

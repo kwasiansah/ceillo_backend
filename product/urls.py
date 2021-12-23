@@ -1,20 +1,24 @@
 from rest_framework.routers import DefaultRouter
-from .views import CollectionViewSet, CategoryViewSet, ProductViewSet, ProductQuestionViewSet, ProductAnswerViewSet, ProductReviewViewSet, postproduct
+from .views import (
+    CollectionViewSet,
+    CategoryViewSet,
+    ProductViewSet,
+    ProductQuestionViewSet,
+    ProductAnswerViewSet,
+    ProductReviewViewSet,
+    postproduct,
+)
 from django.urls import path
-router = DefaultRouter()
-router.register(r'Collection', CollectionViewSet,
-                basename='Collection')
-router.register(r'Category', CategoryViewSet,
-                basename='Category')
-router.register(r'productquestions', ProductQuestionViewSet,
-                basename='productquestion')
-router.register(r'productanswer', ProductAnswerViewSet,
-                basename='productanswer')
-router.register(r'productreview', ProductReviewViewSet,
-                basename='productreview')
-router.register(r'product', ProductViewSet, basename='product')
 
-urlpatterns = [path('post-product/', postproduct, name='post-product')]
+router = DefaultRouter()
+router.register(r"Collection", CollectionViewSet, basename="Collection")
+router.register(r"Category", CategoryViewSet, basename="Category")
+router.register(r"productquestions", ProductQuestionViewSet, basename="productquestion")
+router.register(r"productanswer", ProductAnswerViewSet, basename="productanswer")
+router.register(r"productreview", ProductReviewViewSet, basename="productreview")
+router.register(r"product", ProductViewSet, basename="product")
+
+urlpatterns = [path("post-product/", postproduct, name="post-product")]
 urlpatterns += router.urls
 
 # urlpatterns = [

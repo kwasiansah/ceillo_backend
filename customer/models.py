@@ -60,8 +60,7 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         _("last name"), max_length=150, blank=False, null=False
     )
     # email required
-    email = models.EmailField(
-        _("email address"), blank=False, null=False, unique=True)
+    email = models.EmailField(_("email address"), blank=False, null=False, unique=True)
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
     # TODO: create a validator for the phone_number

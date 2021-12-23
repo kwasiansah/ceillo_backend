@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('product', '0002_alter_productmedia_video'),
+        ("product", "0002_alter_productmedia_video"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='collection',
-            name='thumbnail',
-            field=models.ImageField(default='default/default.jpg', upload_to='collection/'),
+            model_name="collection",
+            name="thumbnail",
+            field=models.ImageField(
+                default="default/default.jpg", upload_to="collection/"
+            ),
         ),
     ]

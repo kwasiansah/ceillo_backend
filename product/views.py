@@ -9,11 +9,32 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import ProductAnswerSerializer, CollectionSerializer, CategorySerializer, ProductCreateSerializer, ProductQuestionSerializer, ProductSerializer, ProductReviewsSerializer
+from .serializers import (
+    ProductAnswerSerializer,
+    CollectionSerializer,
+    CategorySerializer,
+    ProductCreateSerializer,
+    ProductQuestionSerializer,
+    ProductSerializer,
+    ProductReviewsSerializer,
+)
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.mixins import ListModelMixin
-from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView
-from.models import Category, Collection, ProductAnswer, ProductQuestion, Product, ProductReviews
+from rest_framework.generics import (
+    GenericAPIView,
+    ListAPIView,
+    ListCreateAPIView,
+    RetrieveAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
+from .models import (
+    Category,
+    Collection,
+    ProductAnswer,
+    ProductQuestion,
+    Product,
+    ProductReviews,
+)
 
 
 # class CollectionViewSet(ListCreateAPIView, RetrieveUpdateDestroyAPIView):
@@ -81,23 +102,24 @@ from.models import Category, Collection, ProductAnswer, ProductQuestion, Product
 #     def update(self, request):
 #         return Response({'message': 'Review update method'})
 
+
 class CollectionViewSet(viewsets.ModelViewSet):
     serializer_class = CollectionSerializer
     queryset = Collection.objects.all()
-    lookup_field = 'url_slug'
+    lookup_field = "url_slug"
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
-    lookup_field = 'url_slug'
+    lookup_field = "url_slug"
 
 
 @swagger_auto_schema(request_body=ProductSerializer)
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
-    lookup_field = 'url_slug'
+    lookup_field = "url_slug"
 
 
 class ProductQuestionViewSet(viewsets.ModelViewSet):
@@ -113,6 +135,8 @@ class ProductAnswerViewSet(viewsets.ModelViewSet):
 class ProductReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ProductReviewsSerializer
     queryset = ProductReviews.objects.all()
+
+
 # Create your views here.
 
 
@@ -133,8 +157,8 @@ class ProductReviewViewSet(viewsets.ModelViewSet):
 #         return Response(serializer.data)
 
 
-@swagger_auto_schema(method='post', request_body=ProductCreateSerializer)
-@api_view(['POST'])
+@swagger_auto_schema(method="post", request_body=ProductCreateSerializer)
+@api_view(["POST"])
 @permission_classes([IsAuthenticated, IsMerchant])
 def postproduct(request):
     serializer = ProductCreateSerializer(data=request.data)

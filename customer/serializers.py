@@ -12,25 +12,22 @@ User = get_user_model()
 
 
 class MerchantSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Merchant
-        fields = '__all__'
+        fields = "__all__"
 
 
 class CreateMerchantSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Merchant
-        fields = '__all__'
-        read_only_fields = ['customer']
+        fields = "__all__"
+        read_only_fields = ["customer"]
 
 
 class ListCustomerSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Customer
-        fields = '__all__'
+        fields = "__all__"
 
 
 class RetrieveCustomerSerializer(serializers.ModelSerializer):
@@ -38,19 +35,19 @@ class RetrieveCustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = '__all__'
+        fields = "__all__"
         depth = 1
 
     def photo_url(self, obj):
         try:
             url = obj.photo.url
         except ValueError:
-            url = '/media/default/default.jpg'
+            url = "/media/default/default.jpg"
         return url
 
     def get_photo(self, obj):
 
-        request = self.context['request']
+        request = self.context["request"]
         image_url = self.photo_url(obj)
         url = request.build_absolute_uri(location=image_url)
         return url
@@ -59,10 +56,24 @@ class RetrieveCustomerSerializer(serializers.ModelSerializer):
 class UpdateCustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ['photo', 'phone_number', 'first_name', 'last_name',
-                  'university', ]
-        read_only_fields = ['id', 'email', 'is_active', 'status', 'last_login',
-                            'created', 'is_staff', 'verified_email', 'agreed_to_terms']
+        fields = [
+            "photo",
+            "phone_number",
+            "first_name",
+            "last_name",
+            "university",
+        ]
+        read_only_fields = [
+            "id",
+            "email",
+            "is_active",
+            "status",
+            "last_login",
+            "created",
+            "is_staff",
+            "verified_email",
+            "agreed_to_terms",
+        ]
 
 
 # class CreateCustomerSerializer(TokenObtainPairSerializer):
@@ -112,6 +123,7 @@ class UpdateCustomerSerializer(serializers.ModelSerializer):
 #         token['first_name'] = user.first_name
 #         return token
 
+
 class CreateCustomerSerializer(serializers.Serializer):
     email = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
@@ -130,31 +142,33 @@ class CreateCustomerSerializer(serializers.Serializer):
             return email
 
         raise serializers.ValidationError(
-            {'message': 'Email Already Exists'}, status.HTTP_400_BAD_REQUEST)
+            {"message": "Email Already Exists"}, status.HTTP_400_BAD_REQUEST
+        )
 
     def validate(self, attrs):
 
-        if attrs['password'] == attrs['password2']:
+        if attrs["password"] == attrs["password2"]:
             return super().validate(attrs)
 
         raise serializers.ValidationError(
-            {'message': 'Passwords Do Not Match'}, status.HTTP_400_BAD_REQUEST)
+            {"message": "Passwords Do Not Match"}, status.HTTP_400_BAD_REQUEST
+        )
 
     def create(self, validated_data):
 
-        password2 = validated_data.pop('password2')
+        password2 = validated_data.pop("password2")
         user = User.objects.create_user(**validated_data)
         user.set_password(password2)
         user.save()
 
         token = RefreshToken.for_user(user)
         # TODO: this would be removed later
-        token['first_name'] = user.first_name
+        token["first_name"] = user.first_name
         refresh = token
         access = token.access_token
-        token = {'refresh': str(refresh), 'access': str(access)}
+        token = {"refresh": str(refresh), "access": str(access)}
 
-        self.validated_data['token'] = token
+        self.validated_data["token"] = token
         return user
 
 
@@ -177,9 +191,10 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         user.last_login = timezone.now()
         user.save()
-        token['first_name'] = user.first_name
+        token["first_name"] = user.first_name
 
         return token
+
 
 # TODO: Serializer class not responding
 
@@ -193,18 +208,20 @@ class CustomerPasswordChangeSerializer(serializers.Serializer):
 
         if not self.instance.check_password(data):
             raise serializers.ValidationError(
-                {"message": "Old Password Is Invalid"}, status.HTTP_400_BAD_REQUEST)
+                {"message": "Old Password Is Invalid"}, status.HTTP_400_BAD_REQUEST
+            )
         return data
 
     def validate(self, data):
 
-        if data['password'] != data['password2']:
+        if data["password"] != data["password2"]:
             raise serializers.ValidationError(
-                {"message": "Passwords Do Not Match"}, status.HTTP_400_BAD_REQUEST)
+                {"message": "Passwords Do Not Match"}, status.HTTP_400_BAD_REQUEST
+            )
         return data
 
     def update(self, instance, validated_data):
-        instance.set_password(validated_data['password2'])
+        instance.set_password(validated_data["password2"])
         instance.save()
         return instance
 
@@ -217,13 +234,14 @@ class CustomerUserPasswordResetConfirmSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
-        if attrs['password1'] != attrs['password2']:
+        if attrs["password1"] != attrs["password2"]:
             raise serializers.ValidationError(
-                {'passwords': 'Passwords Do Not Match'}, status.HTTP_400_BAD_REQUEST)
+                {"passwords": "Passwords Do Not Match"}, status.HTTP_400_BAD_REQUEST
+            )
         return attrs
 
     def update(self, instance, validated_data):
-        instance.set_password(validated_data['password2'])
+        instance.set_password(validated_data["password2"])
         instance.save()
         return instance
 
@@ -232,7 +250,7 @@ class CustomerLogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField(required=True, write_only=True)
 
     def validate(self, attrs):
-        self.refresh_token = attrs['refresh']
+        self.refresh_token = attrs["refresh"]
 
         return attrs
 
@@ -243,4 +261,5 @@ class CustomerLogoutSerializer(serializers.Serializer):
 
         except TokenError:
             serializers.ValidationError(
-                {'message': 'Not Logged Out'}, status.HTTP_400_BAD_REQUEST)
+                {"message": "Not Logged Out"}, status.HTTP_400_BAD_REQUEST
+            )
