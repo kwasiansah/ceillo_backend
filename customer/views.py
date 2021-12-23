@@ -4,10 +4,18 @@ from django.utils.decorators import method_decorator
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import exceptions, request, status, viewsets
-from rest_framework.decorators import (api_view, parser_classes,
-                                       permission_classes, renderer_classes)
-from rest_framework.generics import (CreateAPIView, GenericAPIView,
-                                     ListAPIView, RetrieveUpdateDestroyAPIView)
+from rest_framework.decorators import (
+    api_view,
+    parser_classes,
+    permission_classes,
+    renderer_classes,
+)
+from rest_framework.generics import (
+    CreateAPIView,
+    GenericAPIView,
+    ListAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -15,16 +23,25 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import AuthToken, Customer, Merchant
 from .permissions import IsLoggedOut
-from .serializers import (CreateCustomerSerializer, CreateMerchantSerializer,
-                          CustomerLogoutSerializer,
-                          CustomerPasswordChangeSerializer,
-                          CustomerUserPasswordResetConfirmSerializer,
-                          ListCustomerSerializer, MerchantSerializer,
-                          MyTokenObtainPairSerializer,
-                          RetrieveCustomerSerializer, UpdateCustomerSerializer)
+from .serializers import (
+    CreateCustomerSerializer,
+    CreateMerchantSerializer,
+    CustomerLogoutSerializer,
+    CustomerPasswordChangeSerializer,
+    CustomerUserPasswordResetConfirmSerializer,
+    ListCustomerSerializer,
+    MerchantSerializer,
+    MyTokenObtainPairSerializer,
+    RetrieveCustomerSerializer,
+    UpdateCustomerSerializer,
+)
 from .utils import constant
-from .utils.helper_func import (authenticate_token, create_token,
-                                generic_email, password_reset_email)
+from .utils.helper_func import (
+    authenticate_token,
+    create_token,
+    generic_email,
+    password_reset_email,
+)
 
 
 class CustomerList(ListAPIView):
@@ -111,14 +128,18 @@ def user_detail(request):
 
 
 # @swagger_auto_schema(methods=['put', 'patch'], manual_parameters=[photo, phone_number, first_name, last_name, university])
-@swagger_auto_schema(methods=["put", "patch"], request_body=UpdateCustomerSerializer)
+@swagger_auto_schema(
+    methods=["put", "patch"], request_body=UpdateCustomerSerializer
+)
 @api_view(["PUT", "PATCH"])
 @parser_classes([MultiPartParser, JSONParser])
 @permission_classes([IsAuthenticated])
 def user_update(request):
     user = request.user
     if request.method == "PUT":
-        serializer = UpdateCustomerSerializer(user, data=request.data, partial=True)
+        serializer = UpdateCustomerSerializer(
+            user, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
         else:
@@ -129,7 +150,9 @@ def user_update(request):
             }
             return Response(data, status.HTTP_406_NOT_ACCEPTABLE)
     else:
-        serializer = UpdateCustomerSerializer(user, data=request.data, partial=True)
+        serializer = UpdateCustomerSerializer(
+            user, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
         else:
@@ -155,7 +178,9 @@ def user_create(request):
             "token": serializer.validated_data["token"],
             "message": "Sign Up Successfull",
         }
-        logo_link = request.build_absolute_uri(location="/media/default/ceillo.svg")
+        logo_link = request.build_absolute_uri(
+            location="/media/default/ceillo.svg"
+        )
         token = create_token(serializer.instance, 60 * 5, "verify")
         user = serializer.instance
         link = f"https://ceillo.netlify.app/verify-email/{token}/"
@@ -287,7 +312,8 @@ def user_logout(request):
     key = f'{email[:email.index("@")]}_token'
     cache.set(key, token, timeout=20)
     return Response(
-        data={"message": "Logged Out Successfully"}, status=status.HTTP_204_NO_CONTENT
+        data={"message": "Logged Out Successfully"},
+        status=status.HTTP_204_NO_CONTENT,
     )
 
 
@@ -298,7 +324,8 @@ def user_merchant_create(request):
 
     if Merchant.objects.filter(customer=request.user).exists():
         return Response(
-            {"message": "User Is Already A Merchant"}, status.HTTP_400_BAD_REQUEST
+            {"message": "User Is Already A Merchant"},
+            status.HTTP_400_BAD_REQUEST,
         )
     print(Merchant.objects.all())
     serializer = CreateMerchantSerializer(data=request.data)
@@ -310,7 +337,9 @@ def user_merchant_create(request):
         }
         return Response(data=data, status=status.HTTP_201_CREATED)
     else:
-        return Response({"message": "invalid data"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"message": "invalid data"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 @api_view(["POST"])
