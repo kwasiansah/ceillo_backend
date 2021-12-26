@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import exceptions, serializers, status
+from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -123,6 +124,11 @@ class UpdateCustomerSerializer(serializers.ModelSerializer):
 #         token['first_name'] = user.first_name
 #         return token
 
+from django.conf import settings
+
+from .utils import constant
+from .utils.helper_func import create_token, generic_email
+
 
 class CreateCustomerSerializer(serializers.Serializer):
     email = serializers.CharField(required=True)
@@ -137,13 +143,45 @@ class CreateCustomerSerializer(serializers.Serializer):
 
     def validate_email(self, email):
         try:
-            User.objects.get(email=email)
+            user = User.objects.get(email=email)
         except User.DoesNotExist as e:
             return email
 
-        raise serializers.ValidationError(
-            {"message": "Email Already Exists"}, status.HTTP_400_BAD_REQUEST
-        )
+        if user.verified_email:
+            raise serializers.ValidationError(
+                {"message": "Email Already Exists"}, status.HTTP_400_BAD_REQUEST
+            )
+        else:
+            logo_link = self.context["request"].build_absolute_uri(
+                location="/media/default/ceillo.svg"
+            )
+            token = create_token(user, 60 * 5, "verify")
+            link = f"https://ceillo.netlify.app/verify-email/{token}/"
+            print(token)
+            email = user.email
+            temp_data = {
+                "email": user.email,
+                "first_name": user.first_name,
+                "link": link,
+                "logo_link": logo_link,
+            }
+            generic_email(
+                user,
+                constant.VERIFY_EMAIL_SUBJECT,
+                link,
+                settings.EMAIL_HOST_USER,
+                [user.email],
+                constant.VERIFY_EMAIL_TEMPLATE,
+                temp_data,
+            )
+            # raise serializers.ValidationError(
+            #     {"message": f"An Email Has Been Sent To {email}"}, status.HTTP_400_BAD_REQUEST
+            # )
+
+            raise serializers.ValidationError(
+                {"message": f"An Email Has Been Sent To {email}"},
+                status.HTTP_200_OK,
+            )
 
     def validate(self, attrs):
 
@@ -160,7 +198,7 @@ class CreateCustomerSerializer(serializers.Serializer):
         user = User.objects.create_user(**validated_data)
         user.set_password(password2)
         user.save()
-
+        # remove token later
         token = RefreshToken.for_user(user)
         # TODO: this would be removed later
         token["first_name"] = user.first_name
@@ -178,13 +216,14 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     # }
     # # TODO: try and remove the errors from this serializer
 
-    # def validate(self, attrs):
-    #     try:
-    #         data = super().validate(attrs)
-    #     except exceptions.AuthenticationFailed:
-    #         raise exceptions.AuthenticationFailed(
-    #             self.default_error_messages, status.HTTP_400_BAD_REQUEST)
-    #     return data
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        print(self.user)
+        if not self.user.verified_email:
+            raise serializers.ValidationError(
+                {"message": "Email Not Verified"}, status.HTTP_401_UNAUTHORIZED
+            )
+        return data
 
     @classmethod
     def get_token(cls, user):

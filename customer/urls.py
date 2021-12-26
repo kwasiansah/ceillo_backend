@@ -20,7 +20,8 @@ urlpatterns = [
     ),
     path("token-refresh/", TokenRefreshView.as_view(), name="token-refresh"),
     path("logout/", user_logout, name="user_logout"),
-    path("verify-email", verify_email, name="verify-email"),
+    path("verify-email/", verify_email, name="verify-email"),
+    path("resend-email/", resend_email, name="resend-email"),
 ]
 
 

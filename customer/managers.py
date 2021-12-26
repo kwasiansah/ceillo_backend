@@ -19,6 +19,9 @@ class CustomerManager(BaseUserManager):
         # TODO: may also consider creating a check for the username field
         data.setdefault("is_active", True)
         email = data.pop("email")
+        import pdb
+
+        pdb.set_trace()
         email = self.normalize_email(email)
         if "@" not in email:
             raise ValidationError(

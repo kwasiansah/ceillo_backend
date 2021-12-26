@@ -44,12 +44,13 @@ def authenticate_token(token):
         Token = AuthToken.objects.get(key=token)
     except AuthToken.DoesNotExist:
         raise exceptions.APIException(
-            {"message": "Invalid Token"}, status.HTTP_403_FORBIDDEN
+            {"message": "Invalid Token"}, status.HTTP_401_UNAUTHORIZED
         )
     if Token.key != token:
         # change this to invalid token later on
+        print("token does not match")
         raise serializers.ValidationError(
-            {"error": "token do not match"}, status.HTTP_400_BAD_REQUEST
+            {"message": "Invalid Token"}, status.HTTP_401_UNAUTHORIZED
         )
     timenow = timezone.now()
 
@@ -57,7 +58,7 @@ def authenticate_token(token):
 
     if Token.expire < timenow:
         raise serializers.ValidationError(
-            {"error": "Token exp"}, status.HTTP_403_FORBIDDEN
+            {"message": "Token exp"}, status.HTTP_401_UNAUTHORIZED
         )
 
     return Token.user
@@ -107,3 +108,29 @@ def generic_email(user, subject, link, sender, to, template_name, template_data)
     email.attach_alternative(html_content, "text/html")
     email.send()
     return user.email.upper()
+
+
+from customer.utils import constant
+
+
+def send_verify_email(user, request=None):
+    logo_link = request.build_absolute_uri(location="/media/default/ceillo.svg")
+    token = create_token(user, 60 * 5, "verify")
+    link = f"https://ceillo.netlify.app/verify-email/{token}/"
+    print(token)
+    temp_data = {
+        "email": user.email,
+        "first_name": user.first_name,
+        "link": link,
+        "logo_link": logo_link,
+    }
+    generic_email(
+        user,
+        constant.VERIFY_EMAIL_SUBJECT,
+        link,
+        settings.EMAIL_HOST_USER,
+        [user.email],
+        constant.VERIFY_EMAIL_TEMPLATE,
+        temp_data,
+    )
+    return True

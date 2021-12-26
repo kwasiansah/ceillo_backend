@@ -19,6 +19,7 @@ from rest_framework.generics import (
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import AuthToken, Customer, Merchant
@@ -128,18 +129,14 @@ def user_detail(request):
 
 
 # @swagger_auto_schema(methods=['put', 'patch'], manual_parameters=[photo, phone_number, first_name, last_name, university])
-@swagger_auto_schema(
-    methods=["put", "patch"], request_body=UpdateCustomerSerializer
-)
+@swagger_auto_schema(methods=["put", "patch"], request_body=UpdateCustomerSerializer)
 @api_view(["PUT", "PATCH"])
 @parser_classes([MultiPartParser, JSONParser])
 @permission_classes([IsAuthenticated])
 def user_update(request):
     user = request.user
     if request.method == "PUT":
-        serializer = UpdateCustomerSerializer(
-            user, data=request.data, partial=True
-        )
+        serializer = UpdateCustomerSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
         else:
@@ -150,9 +147,7 @@ def user_update(request):
             }
             return Response(data, status.HTTP_406_NOT_ACCEPTABLE)
     else:
-        serializer = UpdateCustomerSerializer(
-            user, data=request.data, partial=True
-        )
+        serializer = UpdateCustomerSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
         else:
@@ -165,22 +160,68 @@ def user_update(request):
     return Response(serializer.data, status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method="post", request_body=CreateCustomerSerializer)
+# @swagger_auto_schema(method="post", request_body=CreateCustomerSerializer)
+# @api_view(["POST"])
+# def user_create(request):
+
+#     serializer = CreateCustomerSerializer(data=request.data)
+#     # when raise exception is true test password match needs change
+#     if serializer.is_valid(raise_exception=True):
+#         serializer.save()
+#         data = {
+#             "data": serializer.data,
+#             "token": serializer.validated_data["token"],
+#             "message": "Sign Up Successfull",
+#         }
+#         logo_link = request.build_absolute_uri(
+#             location="/media/default/ceillo.svg"
+#         )
+#         token = create_token(serializer.instance, 60 * 5, "verify")
+#         user = serializer.instance
+#         link = f"https://ceillo.netlify.app/verify-email/{token}/"
+#         print(token)
+#         temp_data = {
+#             "email": user.email,
+#             "first_name": user.first_name,
+#             "link": link,
+#             "logo_link": logo_link,
+#         }
+#         generic_email(
+#             user,
+#             constant.VERIFY_EMAIL_SUBJECT,
+#             link,
+#             settings.EMAIL_HOST_USER,
+#             [user.email],
+#             constant.VERIFY_EMAIL_TEMPLATE,
+#             temp_data,
+#         )
+#         return Response(data, status=status.HTTP_201_CREATED)
+#     # message = serializer.errors['email']
+
+#     data = {
+#         **serializer.errors,
+#         # **message,
+#         "message": "Sign Up Unsuccessfull",
+#     }
+
+#     return Response(data, status=status.HTTP_400_BAD_REQUEST)
 @api_view(["POST"])
 def user_create(request):
 
-    serializer = CreateCustomerSerializer(data=request.data)
+    serializer = CreateCustomerSerializer(
+        data=request.data, context={"request": request}
+    )
     # when raise exception is true test password match needs change
     if serializer.is_valid(raise_exception=True):
         serializer.save()
+        email = serializer.data["email"]
         data = {
-            "data": serializer.data,
-            "token": serializer.validated_data["token"],
-            "message": "Sign Up Successfull",
+            # "data": serializer.data,
+            # "token": serializer.validated_data["token"],
+            # "message": "Sign Up Successfull",
+            "message": f"An Email Has Been Sent To {email}"
         }
-        logo_link = request.build_absolute_uri(
-            location="/media/default/ceillo.svg"
-        )
+        logo_link = request.build_absolute_uri(location="/media/default/ceillo.svg")
         token = create_token(serializer.instance, 60 * 5, "verify")
         user = serializer.instance
         link = f"https://ceillo.netlify.app/verify-email/{token}/"
@@ -202,7 +243,7 @@ def user_create(request):
         )
         return Response(data, status=status.HTTP_201_CREATED)
     # message = serializer.errors['email']
-
+    # this part is not been accessed
     data = {
         **serializer.errors,
         # **message,
@@ -337,18 +378,34 @@ def user_merchant_create(request):
         }
         return Response(data=data, status=status.HTTP_201_CREATED)
     else:
-        return Response(
-            {"message": "invalid data"}, status=status.HTTP_400_BAD_REQUEST
-        )
+        return Response({"message": "invalid data"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
 def verify_email(request):
-    user = request.user
     token = request.data["token"]
     usr = authenticate_token(token)
-    if usr == user:
-        user.verified_email = True
-        user.save()
-        return Response({"message": "Email Successfully Verified"})
+    if usr:
+        usr.verified_email = True
+        usr.save()
+        token = RefreshToken.for_user(usr)
+        data = {
+            "message": "Email Successfully Verified",
+            "token": {"refresh": str(token), "access": str(token.access_token)},
+        }
+        return Response(data, status.HTTP_200_OK)
+
+
+from customer.utils.helper_func import send_verify_email
+
+
+@api_view(["POST"])
+def resend_email(request):
+    token = request.data["token"]
+    try:
+        user = AuthToken.objects.get(key=token).user
+    except AuthToken.DoesNotExist:
+        return Response({"message": "Invalid Token"}, status.HTTP_400_BAD_REQUEST)
+    email = send_verify_email(user, request)
+
+    return Response({"message": "Verification Email Resent"}, status.HTTP_200_OK)
