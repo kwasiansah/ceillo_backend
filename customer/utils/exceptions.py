@@ -38,5 +38,14 @@ def _handle_generic_error(exc, context, response):
 
 
 def _handle_invalid(exc, context, response):
-
     return response
+
+
+from rest_framework.exceptions import APIException
+from rest_framework import status
+
+
+class UnprocessableEntity(APIException):
+    status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+    default_detail = "Entry cannot be processed"
+    default_code = "unprocessable_entity"

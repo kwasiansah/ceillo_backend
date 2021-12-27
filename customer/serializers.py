@@ -63,6 +63,7 @@ class UpdateCustomerSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "university",
+            "verified_email",
         ]
         read_only_fields = [
             "id",
@@ -72,7 +73,6 @@ class UpdateCustomerSerializer(serializers.ModelSerializer):
             "last_login",
             "created",
             "is_staff",
-            "verified_email",
             "agreed_to_terms",
         ]
 
@@ -139,49 +139,50 @@ class CreateCustomerSerializer(serializers.Serializer):
     phone_number = serializers.CharField(required=True)
     university = serializers.CharField(required=True)
     agreed_to_terms = serializers.BooleanField(required=True)
+
     #  = serializers.CharField(required=True)
 
-    def validate_email(self, email):
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist as e:
-            return email
+    # def validate_email(self, email):
+    #     try:
+    #         user = User.objects.get(email=email)
+    #     except User.DoesNotExist as e:
+    #         return email
 
-        if user.verified_email:
-            raise serializers.ValidationError(
-                {"message": "Email Already Exists"}, status.HTTP_400_BAD_REQUEST
-            )
-        else:
-            logo_link = self.context["request"].build_absolute_uri(
-                location="/media/default/ceillo.svg"
-            )
-            token = create_token(user, 60 * 5, "verify")
-            link = f"https://ceillo.netlify.app/verify-email/{token}/"
-            print(token)
-            email = user.email
-            temp_data = {
-                "email": user.email,
-                "first_name": user.first_name,
-                "link": link,
-                "logo_link": logo_link,
-            }
-            generic_email(
-                user,
-                constant.VERIFY_EMAIL_SUBJECT,
-                link,
-                settings.EMAIL_HOST_USER,
-                [user.email],
-                constant.VERIFY_EMAIL_TEMPLATE,
-                temp_data,
-            )
-            # raise serializers.ValidationError(
-            #     {"message": f"An Email Has Been Sent To {email}"}, status.HTTP_400_BAD_REQUEST
-            # )
+    #     if user.verified_email:
+    #         raise serializers.ValidationError(
+    #             {"message": "Email Already Exists"}, status.HTTP_400_BAD_REQUEST
+    #         )
+    #     else:
+    #         logo_link = self.context["request"].build_absolute_uri(
+    #             location="/media/default/ceillo.svg"
+    #         )
+    #         token = create_token(user, 60 * 5, "verify")
+    #         link = f"https://ceillo.netlify.app/verify-email/{token}/"
+    #         print(token)
+    #         email = user.email
+    #         temp_data = {
+    #             "email": user.email,
+    #             "first_name": user.first_name,
+    #             "link": link,
+    #             "logo_link": logo_link,
+    #         }
+    #         generic_email(
+    #             user,
+    #             constant.VERIFY_EMAIL_SUBJECT,
+    #             link,
+    #             settings.EMAIL_HOST_USER,
+    #             [user.email],
+    #             constant.VERIFY_EMAIL_TEMPLATE,
+    #             temp_data,
+    #         )
+    #         # raise serializers.ValidationError(
+    #         #     {"message": f"An Email Has Been Sent To {email}"}, status.HTTP_400_BAD_REQUEST
+    #         # )
 
-            raise serializers.ValidationError(
-                {"message": f"An Email Has Been Sent To {email}"},
-                status.HTTP_200_OK,
-            )
+    #         raise serializers.ValidationError(
+    #             {"message": f"An Email Has Been Sent To {email}"},
+    #             status.HTTP_200_OK,
+    #         )
 
     def validate(self, attrs):
 

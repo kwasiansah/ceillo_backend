@@ -3,9 +3,13 @@ from re import T
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.generics import (GenericAPIView, ListAPIView,
-                                     ListCreateAPIView, RetrieveAPIView,
-                                     RetrieveUpdateDestroyAPIView)
+from rest_framework.generics import (
+    GenericAPIView,
+    ListAPIView,
+    ListCreateAPIView,
+    RetrieveAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -15,12 +19,23 @@ from rest_framework.viewsets import ModelViewSet
 
 from product.permissions import IsMerchant
 
-from .models import (Category, Collection, Product, ProductAnswer,
-                     ProductQuestion, ProductReviews)
-from .serializers import (CategorySerializer, CollectionSerializer,
-                          ProductAnswerSerializer, ProductCreateSerializer,
-                          ProductQuestionSerializer, ProductReviewsSerializer,
-                          ProductSerializer)
+from .models import (
+    Category,
+    Collection,
+    Product,
+    ProductAnswer,
+    ProductQuestion,
+    ProductReviews,
+)
+from .serializers import (
+    CategorySerializer,
+    CollectionSerializer,
+    ProductAnswerSerializer,
+    ProductCreateSerializer,
+    ProductQuestionSerializer,
+    ProductReviewsSerializer,
+    ProductSerializer,
+)
 
 # class CollectionViewSet(ListCreateAPIView, RetrieveUpdateDestroyAPIView):
 #     queryset = Collection.objects.all()

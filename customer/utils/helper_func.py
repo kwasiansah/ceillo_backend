@@ -5,6 +5,7 @@ import pytz
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.db.utils import IntegrityError
+from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -14,6 +15,8 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 
 from customer.models import AuthToken, Customer
+
+User = get_user_model()
 
 
 def expire(time):
@@ -43,22 +46,18 @@ def authenticate_token(token):
     try:
         Token = AuthToken.objects.get(key=token)
     except AuthToken.DoesNotExist:
-        raise exceptions.APIException(
-            {"message": "Invalid Token"}, status.HTTP_401_UNAUTHORIZED
-        )
-    if Token.key != token:
-        # change this to invalid token later on
-        print("token does not match")
-        raise serializers.ValidationError(
-            {"message": "Invalid Token"}, status.HTTP_401_UNAUTHORIZED
+        raise AuthenticationFailed(
+            {"message": "Your Verification Link Is Invalid"},
+            status.HTTP_401_UNAUTHORIZED,
         )
     timenow = timezone.now()
 
     timenow = timenow.replace(tzinfo=pytz.utc)
 
     if Token.expire < timenow:
-        raise serializers.ValidationError(
-            {"message": "Token exp"}, status.HTTP_401_UNAUTHORIZED
+        raise AuthenticationFailed(
+            {"message": "Your Verification Link Has Expired"},
+            status.HTTP_401_UNAUTHORIZED,
         )
 
     return Token.user
@@ -133,4 +132,49 @@ def send_verify_email(user, request=None):
         constant.VERIFY_EMAIL_TEMPLATE,
         temp_data,
     )
-    return True
+    return user.email
+
+
+from .exceptions import UnprocessableEntity
+
+
+def validate_email(request):
+    email = request.data.get("email")
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist as e:
+        pass
+
+    if user.verified_email:
+        raise UnprocessableEntity(
+            {"message": "Email Already Exists"}, status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
+    else:
+        # logo_link = request.build_absolute_uri(
+        #     location=constant.LOGO_URL
+        # )
+        # token = create_token(user, 60 * 5, "verify")
+        # link = f"https://ceillo.netlify.app/verify-email/{token}/"
+        # print(token)
+        # email = user.email
+        # temp_data = {
+        #     "email": user.email,
+        #     "first_name": user.first_name,
+        #     "link": link,
+        #     "logo_link": logo_link,
+        # }
+        # generic_email(
+        #     user,
+        #     constant.VERIFY_EMAIL_SUBJECT,
+        #     link,
+        #     settings.EMAIL_HOST_USER,
+        #     [user.email],
+        #     constant.VERIFY_EMAIL_TEMPLATE,
+        #     temp_data,
+        # )
+        # # raise serializers.ValidationError(
+        # #     {"message": f"An Email Has Been Sent To {email}"}, status.HTTP_400_BAD_REQUEST
+        # # )
+        email = send_verify_email(user, request)
+
+        return email

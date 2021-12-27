@@ -205,9 +205,18 @@ def user_update(request):
 #     }
 
 #     return Response(data, status=status.HTTP_400_BAD_REQUEST)
+from .utils.helper_func import validate_email
+
+
 @api_view(["POST"])
 def user_create(request):
 
+    email = validate_email(request)
+    if email:
+        return Response(
+            {"message": f"An Email Has Been Sent To {email}"},
+            status.HTTP_200_OK,
+        )
     serializer = CreateCustomerSerializer(
         data=request.data, context={"request": request}
     )
@@ -389,7 +398,9 @@ def verify_email(request):
         usr.verified_email = True
         usr.save()
         token = RefreshToken.for_user(usr)
+        serializer = RetrieveCustomerSerializer(usr, context={"request": request})
         data = {
+            "data": serializer.data,
             "message": "Email Successfully Verified",
             "token": {"refresh": str(token), "access": str(token.access_token)},
         }
