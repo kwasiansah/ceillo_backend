@@ -143,7 +143,7 @@ def validate_email(request):
     try:
         user = User.objects.get(email=email)
     except User.DoesNotExist as e:
-        pass
+        return None
 
     if user.verified_email:
         raise UnprocessableEntity(
