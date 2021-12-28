@@ -191,3 +191,17 @@ class AdminMerchant(admin.ModelAdmin):
 @admin.register(AuthToken)
 class AdminAuthToken(admin.ModelAdmin):
     list_display = ["user", "type", "created"]
+
+
+from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin
+from rest_framework_simplejwt.token_blacklist import models
+
+
+class CeilloOutstandinTokenAdmin(OutstandingTokenAdmin):
+    def has_delete_permission(self, request, obj=None, **kwargs):
+
+        return request.user.is_superuser
+
+
+admin.site.unregister(models.OutstandingToken)
+admin.site.register(models.OutstandingToken, CeilloOutstandinTokenAdmin)
