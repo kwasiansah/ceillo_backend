@@ -33,11 +33,11 @@ class ListCustomerSerializer(serializers.ModelSerializer):
 
 class RetrieveCustomerSerializer(serializers.ModelSerializer):
     photo = serializers.SerializerMethodField()
+    merchant = MerchantSerializer()
 
     class Meta:
         model = Customer
         fields = "__all__"
-        depth = 1
 
     def photo_url(self, obj):
         try:
