@@ -1,26 +1,28 @@
 from django.db.models.fields.related import RelatedField
 from rest_framework import serializers
 
-from customer.serializers import ListCustomerSerializer
 
-from .models import (Category, Collection, Product, ProductAnswer,
-                     ProductMedia, ProductQuestion, ProductReviews)
+from .models import (
+    Category,
+    Collection,
+    Product,
+    ProductAnswer,
+    ProductMedia,
+    ProductQuestion,
+    ProductReviews,
+)
 
 
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
-        # fields = '__all__'
-
         fields = "__all__"
 
 
 class CategorySerializer(serializers.ModelSerializer):
     # catalog = CollectionSerializer(many=True)
-
     class Meta:
         model = Category
-        # fields = '__all__'
         fields = "__all__"
 
 
@@ -30,57 +32,30 @@ class ProductMediaSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ProductCreateSerializer(serializers.ModelSerializer):
-    media = serializers.FileField(required=False)
+class ProductSerializer(serializers.ModelSerializer):
+    media = ProductMediaSerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
-
         fields = "__all__"
         read_only_fields = ["category", "merchant"]
 
-    # work on the media option
-
     def create(self, validated_data):
         category = self.initial_data["category"]
+        print(validated_data)
+        print(self.initial_data)
         try:
             category = Category.objects.get(name=category)
         except:
-            raise serializers.ValidationError({"message": "Category does not exists"})
+            raise serializers.ValidationError({"message": "Category Does Not Exists"})
         product = Product.objects.create(**validated_data)
         product.category.add(category)
         product.save()
-        if not validated_data.pop("media", False):
-            media = ProductMedia(product=product)
-            media.save()
 
         return product
 
 
-class ProductDetailSerializer(serializers.ModelSerializer):
-    # category = CategorySerializer(many=True)
-    category = CategorySerializer(many=True)
-
-    class Meta:
-        model = Product
-        fields = "__all__"
-
-        depth = 1
-
-
-class ProductSerializer(serializers.ModelSerializer):
-    # category = CategorySerializer(many=True)
-    category = CategorySerializer(many=True)
-
-    class Meta:
-        model = Product
-        fields = "__all__"
-
-
 class ProductQuestionSerializer(serializers.ModelSerializer):
-    # product = ProductSerializer()
-    customer = ListCustomerSerializer()
-
     class Meta:
         model = ProductQuestion
         fields = "__all__"
@@ -95,8 +70,6 @@ class ProductAnswerSerializer(serializers.ModelSerializer):
 
 
 class ProductReviewsSerializer(serializers.ModelSerializer):
-    # product = ProductSerializer()
-    # customer = CustomerSerializer()
     class Meta:
         model = ProductReviews
         fields = "__all__"

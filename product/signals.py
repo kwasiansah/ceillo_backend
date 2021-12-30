@@ -1,9 +1,8 @@
 from io import BytesIO
-from typing import ByteString
+
 
 from django.core.files.base import ContentFile
 from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from PIL import Image
 
 from .models import Product
@@ -27,3 +26,6 @@ def generate_thumbnail(sender, instance, **kwargs):
         save=False,
     )
     temp_thumb.close()
+
+
+# def delete_product_images(sender, instance, **kwargs):

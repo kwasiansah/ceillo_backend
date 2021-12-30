@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "cloudinary_storage",
     "django.contrib.staticfiles",
+    "cloudinary",
     "drf_yasg",
     "rest_framework",
     "rest_framework_swagger",
@@ -152,7 +154,7 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
-
+STATICFILES_STORAGE = "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
 # STATICFILES_DIRS  = (os.path.join(BASE_DIR, 'static'),)
 
 # Default primary key field type
@@ -163,7 +165,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 DEBUG_TOOLBAR_PANELS = [
     "debug_toolbar.panels.history.HistoryPanel",
     "debug_toolbar.panels.versions.VersionsPanel",
@@ -259,3 +261,9 @@ CACHES = {
 }
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": "ha8rp7uvj",
+    "API_KEY": "124267939288912",
+    "API_SECRET": "hYc8kADJiaPpdWAQQO7I2qfIpxk",
+}

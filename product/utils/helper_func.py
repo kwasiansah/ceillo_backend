@@ -20,20 +20,11 @@ def get_url_slug(name):
 
 
 def get_product_image(obj):
-    # url = obj.media.all()[0].raw_image.url if obj.media.first(
-    # ) else "/media/default/default.jpg"
-    # vid = obj.media.all()[0].video.url if obj.media.first(
-    # ) else "/media/default/default.jpg"
 
     try:
         url = obj.media.all()[0].raw_image.url
     except IndexError:
         url = "/media/default/default.jpg"
     print("this", url)
-    try:
 
-        vid = obj.media.all()[0].video.url
-    except IndexError:
-        vid = "/media/default/defaultvid.mp4"
-    print(vid)
-    return url, vid
+    return url

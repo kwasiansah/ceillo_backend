@@ -2,12 +2,11 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 
 from .models import *
-from .utils.helper_func import get_product_image
 
 # TODO: i need to work on the admin panel password hashing
 # Register your models here.
 
-# admin.site.site_header = 'ceillo'
+admin.site.site_header = "ceillo"
 
 
 @admin.register(Collection)
@@ -20,8 +19,6 @@ class AdminCollection(admin.ModelAdmin):
         return mark_safe(
             '<img src="{url}" width="{width}" height={height} />'.format(
                 url=obj.thumbnail.url,
-                # width=obj.thumbnail.width,
-                # height=obj.thumbnail.height,
                 width=200,
                 height=200,
             )
@@ -39,8 +36,25 @@ class AdminCategory(admin.ModelAdmin):
         return mark_safe(
             '<img src="{url}" width="{width}" height={height} />'.format(
                 url=obj.thumbnail.url,
-                # width=obj.thumbnail.width,
-                # height=obj.thumbnail.height,
+                width=200,
+                height=200,
+            )
+        )
+
+
+class ProductMediaInline(admin.StackedInline):
+    model = ProductMedia
+    readonly_fields = ("thumbnail_image",)
+    # to prevent duplicate in the admin panel
+    extra = 0
+
+    @admin.display(description="thumnails")
+    def thumbnail_image(self, obj):
+        print(obj)
+        print("passed here")
+        return mark_safe(
+            '<img src="{url}" width="{width}" height={height}/>'.format(
+                url=obj.raw_image.url,
                 width=200,
                 height=200,
             )
@@ -50,25 +64,19 @@ class AdminCategory(admin.ModelAdmin):
 @admin.register(Product)
 class AdminProduct(admin.ModelAdmin):
     prepopulated_fields = {"url_slug": ("name",)}
-    readonly_fields = [
-        "thumbnail_image",
-    ]
+    readonly_fields = ("thumbnail_image",)
     filter_horizontal = ("category",)
+    inlines = [ProductMediaInline]
 
     @admin.display(description="thumnails")
     def thumbnail_image(self, obj):
         return mark_safe(
-            '<img src="{url}" width="{width}" height={height}/><br><video src="{vid}"   autoplay controls  width=350, height=350></video>'.format(
-                url=get_product_image(obj)[0],
-                vid=get_product_image(obj)[1],
-                width=200,
-                height=200,
+            '<video src="{vid}"   autoplay controls  width={width}, height={height}></video>'.format(
+                vid=obj.video.url,
+                width=350,
+                height=350,
             )
         )
-        # return mark_safe('<p>{url}</p><br><p>{vid}</p>'.format(
-        #     url=get_product_image(obj)[0],
-        #     vid=get_product_image(obj)[0],
-        # ))
 
 
 @admin.register(ProductQuestion)
@@ -85,17 +93,10 @@ class AdminProductReview(admin.ModelAdmin):
         return mark_safe(
             '<img src="{url}" width="{width}" height={height} />'.format(
                 url=obj.image.url,
-                # width=obj.thumbnail.width,
-                # height=obj.thumbnail.height,
                 width=200,
                 height=200,
             )
         )
-
-
-@admin.register(ProductAnswer)
-class AdminProductAnswer(admin.ModelAdmin):
-    pass
 
 
 @admin.register(ProductMedia)
@@ -105,10 +106,14 @@ class AdminProductMedia(admin.ModelAdmin):
     @admin.display(description="thumnails")
     def thumbnail_image(self, obj):
         return mark_safe(
-            '<img src="{url}" width="{width}" height={height}/><br><video src="{vid}"   autoplay controls  width=350, height=350></video>'.format(
+            '<img src="{url}" width="{width}" height={height}/>'.format(
                 url=obj.raw_image.url,
-                vid=obj.video.url,
                 width=200,
                 height=200,
             )
         )
+
+
+@admin.register(ProductAnswer)
+class AdminProductAnswer(admin.ModelAdmin):
+    pass

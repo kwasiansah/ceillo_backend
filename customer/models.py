@@ -1,14 +1,10 @@
 import uuid
-from enum import Enum
 
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin, User
-from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.core.mail.message import EmailMessage
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.db.models.signals import pre_save
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.models import Token
 
@@ -24,20 +20,6 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         KNUST = ("KNUST", "Knust")
         UG = ("UG", "UG")
 
-    # class ACTIVE_CHOICES(Enum):
-    #     active = (
-    #         "AC",
-    #         "status",
-    #     )
-    #     remove = (
-    #         "RM",
-    #         "Removed",
-    #     )
-
-    #     @classmethod
-    #     def get_value(cls, member):
-    #         return cls[member].value[0]
-
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -48,11 +30,9 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         unique=True,
     )
     is_staff = models.BooleanField(default=False)
-    # thinking about making the defalt RM
     status = models.CharField(
         max_length=7, choices=STATUS_CHOICES.choices, default=STATUS_CHOICES.ACTIVE
     )
-    # first name required
     is_active = models.BooleanField(default=True)
     first_name = models.CharField(
         _("first name"), max_length=150, blank=True, default=""
@@ -88,19 +68,8 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         verbose_name = _("Customer")
         verbose_name_plural = _("Customers")
 
-    def email_user(self, subject, message, from_email=None, **kwargs):
-        # TODO: i would have to set this up later
-        pass
-
     def __str__(self):
         return self.email
-
-    # def save(self, commit=True):
-    #     user = super().save(commit=False)
-    #     user.set_password(user.password)
-    #     if commit:
-    #         user.save()
-    #     return user
 
 
 class Address(models.Model):
@@ -116,13 +85,6 @@ class Merchant(models.Model):
         DRIVER = ("Driver", "Driver")
         STUDENT = ("Student", "Student")
         VOTER = ("Voter", "Voter")
-
-    # CARD_TYPES = (
-    #     ("National", "National"),
-    #     ("Driver", "Driver"),
-    #     ("Student", "Student"),
-    #     ("Voter", "Voter"),
-    # )
 
     id = models.UUIDField(
         primary_key=True,

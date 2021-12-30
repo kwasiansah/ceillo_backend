@@ -1,21 +1,12 @@
+from .utils.helper_func import validate_email
+from customer.utils.helper_func import send_verify_email
 from django.conf import settings
 from django.core.cache import cache
 from django.utils.decorators import method_decorator
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import exceptions, request, status, viewsets
-from rest_framework.decorators import (
-    api_view,
-    parser_classes,
-    permission_classes,
-    renderer_classes,
-)
-from rest_framework.generics import (
-    CreateAPIView,
-    GenericAPIView,
-    ListAPIView,
-    RetrieveUpdateDestroyAPIView,
-)
+from rest_framework import exceptions, status
+from rest_framework.decorators import api_view, parser_classes, permission_classes
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -26,54 +17,16 @@ from .models import AuthToken, Customer, Merchant
 from .permissions import IsLoggedOut
 from .serializers import (
     CreateCustomerSerializer,
-    CreateMerchantSerializer,
     CustomerLogoutSerializer,
     CustomerPasswordChangeSerializer,
     CustomerUserPasswordResetConfirmSerializer,
-    ListCustomerSerializer,
     MerchantSerializer,
     MyTokenObtainPairSerializer,
     RetrieveCustomerSerializer,
     UpdateCustomerSerializer,
 )
 from .utils import constant
-from .utils.helper_func import (
-    authenticate_token,
-    create_token,
-    generic_email,
-    password_reset_email,
-)
-
-
-class CustomerList(ListAPIView):
-    queryset = Customer.objects.all()
-    serializer_class = ListCustomerSerializer
-    lookup_field = "custmer_id"
-
-
-class CustomerRetrieve(RetrieveUpdateDestroyAPIView):
-    queryset = Customer.objects.all()
-    serializer_class = RetrieveCustomerSerializer
-    lookup_field = "id"
-
-
-class CustomerCreate(CreateAPIView, ListAPIView):
-    queryset = Customer.objects.all()
-    serializer_class = CreateCustomerSerializer
-
-
-class MerchantViewSet(viewsets.ModelViewSet):
-    serializer_class = MerchantSerializer
-    queryset = Merchant.objects.all()
-
-
-# Create your views here.
-
-
-# login_email = openapi.Schema(
-#     'email', in_=openapi.IN_BODY, description='user email', type=openapi.TYPE_STRING, schema=MyTokenObtainPairSerializer)
-# login_password = openapi.Schema(
-#     'password', in_=openapi.IN_BODY, description='user email', type=openapi.TYPE_STRING, schema=MyTokenObtainPairSerializer)
+from .utils.helper_func import authenticate_token, create_token, password_reset_email
 
 
 @method_decorator(
@@ -95,15 +48,12 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 
 @api_view(["GET"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLoggedOut])
 def user_list(request):
     queryset = Customer.objects.all()
-    serializer = ListCustomerSerializer(queryset, many=True)
+    serializer = RetrieveCustomerSerializer(queryset, many=True)
     data = {"data": serializer.data, "message": "list of all customers"}
     return Response(data, status.HTTP_200_OK)
-
-
-# TODO:add Isloggedout permission to authenticated views
 
 
 @api_view(["GET"])
@@ -115,24 +65,10 @@ def user_detail(request):
     return Response(data, status.HTTP_200_OK)
 
 
-# photo = openapi.Parameter('photo', openapi.IN_FORM,
-#                           type=openapi.TYPE_FILE, required=False)
-# phone_number = openapi.Parameter(
-#     'phone_number', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
-# first_name = openapi.Parameter(
-#     'first_name', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
-# last_name = openapi.Parameter(
-#     'last_name', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
-
-# university = openapi.Parameter(
-#     'university', openapi.IN_FORM, type=openapi.TYPE_STRING, required=False)
-
-
-# @swagger_auto_schema(methods=['put', 'patch'], manual_parameters=[photo, phone_number, first_name, last_name, university])
 @swagger_auto_schema(methods=["put", "patch"], request_body=UpdateCustomerSerializer)
 @api_view(["PUT", "PATCH"])
 @parser_classes([MultiPartParser, JSONParser])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLoggedOut])
 def user_update(request):
     user = request.user
     if request.method == "PUT":
@@ -160,54 +96,6 @@ def user_update(request):
     return Response(serializer.data, status.HTTP_200_OK)
 
 
-# @swagger_auto_schema(method="post", request_body=CreateCustomerSerializer)
-# @api_view(["POST"])
-# def user_create(request):
-
-#     serializer = CreateCustomerSerializer(data=request.data)
-#     # when raise exception is true test password match needs change
-#     if serializer.is_valid(raise_exception=True):
-#         serializer.save()
-#         data = {
-#             "data": serializer.data,
-#             "token": serializer.validated_data["token"],
-#             "message": "Sign Up Successfull",
-#         }
-#         logo_link = request.build_absolute_uri(
-#             location="/media/default/ceillo.svg"
-#         )
-#         token = create_token(serializer.instance, 60 * 5, "verify")
-#         user = serializer.instance
-#         link = f"https://ceillo.netlify.app/verify-email/{token}/"
-#         print(token)
-#         temp_data = {
-#             "email": user.email,
-#             "first_name": user.first_name,
-#             "link": link,
-#             "logo_link": logo_link,
-#         }
-#         generic_email(
-#             user,
-#             constant.VERIFY_EMAIL_SUBJECT,
-#             link,
-#             settings.EMAIL_HOST_USER,
-#             [user.email],
-#             constant.VERIFY_EMAIL_TEMPLATE,
-#             temp_data,
-#         )
-#         return Response(data, status=status.HTTP_201_CREATED)
-#     # message = serializer.errors['email']
-
-#     data = {
-#         **serializer.errors,
-#         # **message,
-#         "message": "Sign Up Unsuccessfull",
-#     }
-
-#     return Response(data, status=status.HTTP_400_BAD_REQUEST)
-from .utils.helper_func import validate_email
-
-
 @api_view(["POST"])
 def user_create(request):
 
@@ -223,39 +111,13 @@ def user_create(request):
     # when raise exception is true test password match needs change
     if serializer.is_valid(raise_exception=True):
         serializer.save()
-        email = serializer.data["email"]
-        data = {
-            # "data": serializer.data,
-            # "token": serializer.validated_data["token"],
-            # "message": "Sign Up Successfull",
-            "message": f"An Email Has Been Sent To {email}"
-        }
-        logo_link = request.build_absolute_uri(location="/media/default/ceillo.svg")
-        token = create_token(serializer.instance, 60 * 5, "verify")
-        user = serializer.instance
-        link = f"https://ceillo.netlify.app/verify-email/{token}/"
-        print(token)
-        temp_data = {
-            "email": user.email,
-            "first_name": user.first_name,
-            "link": link,
-            "logo_link": logo_link,
-        }
-        generic_email(
-            user,
-            constant.VERIFY_EMAIL_SUBJECT,
-            link,
-            settings.EMAIL_HOST_USER,
-            [user.email],
-            constant.VERIFY_EMAIL_TEMPLATE,
-            temp_data,
-        )
+        email = send_verify_email(serializer.instance, request)
+        data = {"message": f"An Email Has Been Sent To {email}"}
         return Response(data, status=status.HTTP_201_CREATED)
     # message = serializer.errors['email']
     # this part is not been accessed
     data = {
         **serializer.errors,
-        # **message,
         "message": "Sign Up Unsuccessfull",
     }
 
@@ -263,7 +125,7 @@ def user_create(request):
 
 
 @api_view(["DELETE"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLoggedOut])
 def user_delete(request):
     user = request.user
     user.delete()
@@ -284,7 +146,7 @@ def user_delete(request):
     ),
 )
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLoggedOut])
 def password_change(request):
     user = request.user
     serializer = CustomerPasswordChangeSerializer(user, data=request.data)
@@ -309,21 +171,12 @@ def password_change(request):
 @api_view(["POST"])
 def user_password_reset(request):
     timeout = 60 * settings.EMAIL_RESET_TOKEN_TIMEOUT_MIN
-    # can place an exception for no email here
     try:
         user = Customer.objects.get(email=request.data["email"])
     except Customer.DoesNotExist:
         data = {"message": "Account Not Found"}
         raise exceptions.NotFound(data, status.HTTP_404_NOT_FOUND)
     token = create_token(user, timeout, "email")
-    # # TODO: this link would be linked to a part of the front end
-    # link = f"https://ceillo.netlify.app/password-reset-confirm/{token}/"
-    # subject = 'your password reset token'
-    # message = f'hello {user.first_name} follow this link to reset your password {link}'
-    # sender = settings.EMAIL_HOST_USER
-    # email = user.email.upper()
-    # to = [user.email]
-    # send_mail(subject, message, sender, to)
     email = password_reset_email(user, token)
     data = {
         "message": f"An Email Has Been Sent To {email}",
@@ -352,7 +205,7 @@ def user_password_reset_confirm(request):
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLoggedOut])
 def user_logout(request):
     serializer = CustomerLogoutSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -367,9 +220,9 @@ def user_logout(request):
     )
 
 
-@swagger_auto_schema(method="post", request_body=CreateMerchantSerializer)
+@swagger_auto_schema(method="post", request_body=MerchantSerializer)
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsLoggedOut])
 def user_merchant_create(request):
 
     if Merchant.objects.filter(customer=request.user).exists():
@@ -378,7 +231,7 @@ def user_merchant_create(request):
             status.HTTP_400_BAD_REQUEST,
         )
     print(Merchant.objects.all())
-    serializer = CreateMerchantSerializer(data=request.data)
+    serializer = MerchantSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         serializer.save(customer=request.user)
         data = {
@@ -405,9 +258,6 @@ def verify_email(request):
             "token": {"refresh": str(token), "access": str(token.access_token)},
         }
         return Response(data, status.HTTP_200_OK)
-
-
-from customer.utils.helper_func import send_verify_email
 
 
 @api_view(["POST"])

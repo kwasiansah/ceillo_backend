@@ -1,12 +1,12 @@
 import uuid
 
 from django.db import models
-from django.db.models.fields import related
 
 from customer.models import Customer, Merchant
 from product.utils.helper_func import get_url_slug
+from cloudinary_storage.storage import VideoMediaCloudinaryStorage
+from cloudinary_storage.validators import validate_video
 
-# Create your models here.
 MAX_LENGTH = 1000
 
 
@@ -79,23 +79,6 @@ class Category(models.Model):
         super().save(*args, **kwargs)
 
 
-# TODO: experimenting on the recursive relationship if it does not work then result to this
-
-# class SubCategory(models.Model):
-#     name  = models.charField(max_lenght=MAX_LENGTH, default="")
-#     url_slug = models.SlugField(max_length=MAX_LENGTH, unique=True)
-#     thumbnail = models.ImageField(upload_to='subcategory/', null=True, default="default/default.jpg")
-#     created = models.DateTimeField(auto_now_add=True)
-#     updated = models.DateTimeField(auto_now=True)
-#     class Meta:
-#         ordering = ('-created')
-#         verbose_name = 'SubCategory'
-#         verbose_name_plural = 'SubCategories'
-
-#     def __str__(self):
-#         return self.name
-
-
 class Product(models.Model):
 
     product_id = models.UUIDField(
@@ -104,18 +87,13 @@ class Product(models.Model):
 
     name = models.CharField(max_length=MAX_LENGTH, unique=False)
 
-    url_slug = models.SlugField(default="")  # TODO: work on the slug field
-    # this image field would later be given its own model for normalization
-    # TODO: i would remove the reverse relationship from the media field
-
-    # media = models.ManyToManyField(ProductMedia, related_name='product')
+    url_slug = models.SlugField(default="")
 
     brand = models.CharField(max_length=250)
 
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     description = models.TextField()
-    # TODO: add another models for this field.
     long_description = models.TextField()
     created = models.DateTimeField(auto_now_add=True, editable=False)
     in_stock = models.PositiveIntegerField()
@@ -127,15 +105,22 @@ class Product(models.Model):
     digital = models.BooleanField(default=False)
 
     """
-    # thinking of how to implement the merchant
     merchant = models.ForeignKey(
         Merchant, blank=False, null=True, on_delete=models.CASCADE
     )
-    # thinking of using a foreign key
+
     category = models.ManyToManyField(Category, related_name="products")
 
     updated = models.DateTimeField(auto_now=True)
     rating = models.FloatField(default=0.0)
+    video = models.FileField(
+        upload_to="products/video/",
+        null=True,
+        blank=True,
+        default="default/defaultvid.mp4",
+        storage=VideoMediaCloudinaryStorage,
+        validators=[validate_video],
+    )
 
     class Meta:
         ordering = ("-created",)
@@ -174,12 +159,6 @@ class ProductMedia(models.Model):
         upload_to="products/thumbnail/", null=True, blank=True
     )
     main_image = models.BooleanField(default=False)
-    video = models.FileField(
-        upload_to="products/video/",
-        null=True,
-        blank=True,
-        default="default/defaultvid.mp4",
-    )
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:

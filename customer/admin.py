@@ -1,12 +1,11 @@
 from django import forms
 from django.contrib import admin
-from django.contrib.auth import authenticate
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
-from django.forms.formsets import DEFAULT_MAX_NUM
 from django.utils.safestring import mark_safe
+from rest_framework_simplejwt.token_blacklist import models
+from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin
 
 from .models import AuthToken, Customer, Merchant
 
@@ -161,16 +160,11 @@ class UserAdmin(BaseUserAdmin):
             )
         )
 
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser
 
-# Now register the new UserAdmin...
+
 admin.site.register(Customer, UserAdmin)
-
-# @admin.register(Customer)
-# class AdminCustomer(admin.ModelAdmin):
-#     # this is to prevent deletion of customers in the admin panel
-#     # this would later be change to a staff account
-#     def has_delete_permission(self, request, obj=None):
-#         return request.user.is_superuser
 
 
 @admin.register(Merchant)
@@ -191,10 +185,6 @@ class AdminMerchant(admin.ModelAdmin):
 @admin.register(AuthToken)
 class AdminAuthToken(admin.ModelAdmin):
     list_display = ["user", "type", "created"]
-
-
-from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin
-from rest_framework_simplejwt.token_blacklist import models
 
 
 class CeilloOutstandinTokenAdmin(OutstandingTokenAdmin):

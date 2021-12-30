@@ -19,3 +19,5 @@ backend/media/profile
 backend/media/reviews
 **.pyc
 manage.py
+backend/static/
+backend/media/
