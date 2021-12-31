@@ -45,7 +45,7 @@ class ProductSerializer(serializers.ModelSerializer):
         print(validated_data)
         print(self.initial_data)
         try:
-            category = Category.objects.get(name=category)
+            category = Category.objects.get(id=category)
         except:
             raise serializers.ValidationError({"message": "Category Does Not Exists"})
         product = Product.objects.create(**validated_data)
