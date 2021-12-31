@@ -7,5 +7,5 @@ class IsLoggedOut(BasePermission):
         email = request.user.email
         key = f'{email[:email.index("@")]}_token'
         token = request.auth.__str__()
-        print(cache.get(key))
+        print("the logout token access ", cache.get(key))
         return cache.get(key) != token

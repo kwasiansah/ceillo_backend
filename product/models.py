@@ -84,19 +84,13 @@ class Product(models.Model):
     product_id = models.UUIDField(
         default=uuid.uuid4, unique=True, blank=False, null=False, editable=False
     )
-
     name = models.CharField(max_length=MAX_LENGTH, unique=False)
-
     url_slug = models.SlugField(default="")
-
     brand = models.CharField(max_length=250)
-
     price = models.DecimalField(max_digits=10, decimal_places=2)
-
     description = models.TextField()
-    long_description = models.TextField()
     created = models.DateTimeField(auto_now_add=True, editable=False)
-    in_stock = models.PositiveIntegerField()
+    stock = models.PositiveIntegerField()
     active = models.BooleanField(default=False)
     # checks if the products is tangible or not
     """ 
@@ -108,9 +102,7 @@ class Product(models.Model):
     merchant = models.ForeignKey(
         Merchant, blank=False, null=True, on_delete=models.CASCADE
     )
-
     category = models.ManyToManyField(Category, related_name="products")
-
     updated = models.DateTimeField(auto_now=True)
     rating = models.FloatField(default=0.0)
     video = models.FileField(

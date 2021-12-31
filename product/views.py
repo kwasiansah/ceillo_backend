@@ -65,9 +65,6 @@ class ProductReviewViewSet(viewsets.ModelViewSet):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated, IsMerchant])
 def postproduct(request):
-    import pdb
-
-    pdb.set_trace()
     serializer = ProductSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save(merchant=request.user.merchant)
