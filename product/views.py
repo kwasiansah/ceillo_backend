@@ -65,11 +65,14 @@ class ProductReviewViewSet(viewsets.ModelViewSet):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated, IsMerchant])
 def postproduct(request):
+    print(request.data)
+    print()
+    print(request.FILES)
     serializer = ProductSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save(merchant=request.user.merchant)
     for media in request.FILES.getlist("images"):
         ProductMedia.objects.create(product=serializer.instance, raw_image=media)
     product = ProductSerializer(serializer.instance)
-
+    print(product.data)
     return Response(product.data)
