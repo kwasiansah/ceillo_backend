@@ -238,6 +238,7 @@ def user_merchant_create(request):
             "merchant": serializer.data,
             "message": "Merchant Account Successfully Created",
         }
+        print("merchant created")
         return Response(data=data, status=status.HTTP_201_CREATED)
     else:
         return Response({"message": "invalid data"}, status=status.HTTP_400_BAD_REQUEST)
