@@ -20,11 +20,12 @@ class MerchantSerializer(serializers.ModelSerializer):
 
 class RetrieveCustomerSerializer(serializers.ModelSerializer):
     # photo = serializers.SerializerMethodField()
-    merchant = MerchantSerializer()
+    # merchant = MerchantSerializer()
 
     class Meta:
         model = Customer
-        fields = "__all__"
+        exclude = ["password"]
+        depth = 1
 
     """this section not needed right now because of cloudinary"""
     # def photo_url(self, obj):
@@ -108,7 +109,11 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         user.last_login = timezone.now()
         user.save()
         token["first_name"] = user.first_name
-
+        try:
+            token["merchant_id"] = user.merchant.id
+        except:
+            token["merchant_id"] = None
+        token["photo"] = user.photo.url
         return token
 
 
