@@ -110,10 +110,14 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         user.save()
         token["first_name"] = user.first_name
         try:
-            token["merchant_id"] = user.merchant.id
+            print("it got here")
+            token["merchant_id"] = str(user.merchant.id)
         except:
             token["merchant_id"] = None
-        token["photo"] = user.photo.url
+        try:
+            token["photo"] = user.photo.url
+        except ValueError:
+            token["photo"] = ""
         return token
 
 
