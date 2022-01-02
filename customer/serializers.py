@@ -111,11 +111,13 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         try:
             print("it got here")
             token["merchant_id"] = str(user.merchant.id)
-        except:
+        except Customer.merchant.RelatedObjectDoesNotExist as e:
+            print(e)
             token["merchant_id"] = None
         try:
             token["photo"] = user.photo.url
-        except ValueError:
+        except ValueError as e:
+            print(e)
             token["photo"] = None
         return token
 

@@ -146,7 +146,8 @@ class ProductMedia(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, null=True, blank=False, related_name="media"
     )
-    raw_image = models.ImageField(upload_to="products/", default="default/default.jpg")
+    # this field name must change to image
+    image = models.ImageField(upload_to="products/", default="default/default.jpg")
     thumbnail = models.ImageField(
         upload_to="products/thumbnail/", null=True, blank=True
     )
@@ -154,7 +155,7 @@ class ProductMedia(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ("-created",)
+        ordering = ("created",)
         verbose_name = "Product Media"
         verbose_name_plural = "Product Media"
 
@@ -162,7 +163,7 @@ class ProductMedia(models.Model):
         return self.raw_image.name
 
     def save(self, *args, **kwargs):
-        if "default" in self.raw_image.name:
+        if "default" in self.image.name:
             print("default image used")
         else:
             print("thumbnail was created")

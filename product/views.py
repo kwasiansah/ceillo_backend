@@ -1,11 +1,12 @@
 from re import T
 
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
+from customer.models import Customer
+from rest_framework.pagination import PageNumberPagination
 from product.permissions import IsMerchant
 
 from .models import (
@@ -44,6 +45,21 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     lookup_field = "url_slug"
+    pagination_class = PageNumberPagination
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if isinstance(self.request.user, Customer):
+            user = self.request.user
+            try:
+                merchant = user.merchant
+            except Customer.merchant.RelatedObjectDoesNotExist:
+                merchant = None
+            queryset = queryset.filter(merchant=merchant)
+            print("merchant specific products retrived")
+            return queryset
+        print("general products retrieved")
+        return queryset
 
 
 class ProductQuestionViewSet(viewsets.ModelViewSet):
@@ -72,7 +88,8 @@ def postproduct(request):
     serializer.is_valid(raise_exception=True)
     serializer.save(merchant=request.user.merchant)
     for media in request.FILES.getlist("images"):
-        ProductMedia.objects.create(product=serializer.instance, raw_image=media)
+        ProductMedia.objects.create(product=serializer.instance, image=media)
     product = ProductSerializer(serializer.instance)
     print(product.data)
-    return Response(product.data)
+    data = {"message": "Product Successfully Posted"}
+    return Response(data, status.HTTP_200_OK)
