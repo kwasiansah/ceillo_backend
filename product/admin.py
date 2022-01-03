@@ -54,7 +54,7 @@ class ProductMediaInline(admin.StackedInline):
         print("passed here")
         return mark_safe(
             '<img src="{url}" width="{width}" height={height}/>'.format(
-                url=obj.raw_image.url,
+                url=obj.image_url.url,
                 width=200,
                 height=200,
             )
@@ -65,14 +65,13 @@ class ProductMediaInline(admin.StackedInline):
 class AdminProduct(admin.ModelAdmin):
     prepopulated_fields = {"url_slug": ("name",)}
     readonly_fields = ("thumbnail_image",)
-    filter_horizontal = ("category",)
     inlines = [ProductMediaInline]
 
     @admin.display(description="thumnails")
     def thumbnail_image(self, obj):
         return mark_safe(
             '<video src="{vid}"   autoplay controls  width={width}, height={height}></video>'.format(
-                vid=obj.video.url,
+                vid=obj.video_url.url,
                 width=350,
                 height=350,
             )
@@ -92,7 +91,7 @@ class AdminProductReview(admin.ModelAdmin):
 
         return mark_safe(
             '<img src="{url}" width="{width}" height={height} />'.format(
-                url=obj.image.url,
+                url=obj.image_url.url,
                 width=200,
                 height=200,
             )
@@ -107,7 +106,7 @@ class AdminProductMedia(admin.ModelAdmin):
     def thumbnail_image(self, obj):
         return mark_safe(
             '<img src="{url}" width="{width}" height={height}/>'.format(
-                url=obj.raw_image.url,
+                url=obj.image_url.url,
                 width=200,
                 height=200,
             )

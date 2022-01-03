@@ -28,6 +28,12 @@ from .serializers import (
 )
 
 
+class ProductResultsPagination(PageNumberPagination):
+    page_size = 9
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
 class CollectionViewSet(viewsets.ModelViewSet):
     serializer_class = CollectionSerializer
     queryset = Collection.objects.all()
@@ -45,7 +51,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     lookup_field = "url_slug"
-    pagination_class = PageNumberPagination
+    pagination_class = ProductResultsPagination
 
     def get_queryset(self):
         queryset = super().get_queryset()

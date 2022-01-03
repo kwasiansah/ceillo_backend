@@ -33,7 +33,8 @@ class ProductMediaSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    media = ProductMediaSerializer(many=True, read_only=True)
+    images = ProductMediaSerializer(many=True, read_only=True)
+    category = CategorySerializer()
 
     class Meta:
         model = Product

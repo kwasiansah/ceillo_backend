@@ -22,7 +22,7 @@ def get_url_slug(name):
 def get_product_image(obj):
 
     try:
-        url = obj.media.all()[0].raw_image.url
+        url = obj.media.all()[0].image.url
     except IndexError:
         url = "/media/default/default.jpg"
     print("this", url)

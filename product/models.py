@@ -102,10 +102,16 @@ class Product(models.Model):
     merchant = models.ForeignKey(
         Merchant, blank=False, null=True, on_delete=models.CASCADE
     )
-    category = models.ManyToManyField(Category, related_name="products")
+    category = models.ForeignKey(
+        Category,
+        related_name="products",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=False,
+    )
     updated = models.DateTimeField(auto_now=True)
     rating = models.FloatField(default=0.0)
-    video = models.FileField(
+    video_url = models.FileField(
         upload_to="products/video/",
         null=True,
         blank=True,
@@ -144,14 +150,14 @@ class ProductMedia(models.Model):
     # TODO: remember to change to null = False later
 
     product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, null=True, blank=False, related_name="media"
+        Product, on_delete=models.CASCADE, null=True, blank=False, related_name="images"
     )
     # this field name must change to image
-    image = models.ImageField(upload_to="products/", default="default/default.jpg")
+    image_url = models.ImageField(upload_to="products/", default="default/default.jpg")
     thumbnail = models.ImageField(
         upload_to="products/thumbnail/", null=True, blank=True
     )
-    main_image = models.BooleanField(default=False)
+
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -160,10 +166,10 @@ class ProductMedia(models.Model):
         verbose_name_plural = "Product Media"
 
     def __str__(self):
-        return self.raw_image.name
+        return self.image_url.name
 
     def save(self, *args, **kwargs):
-        if "default" in self.image.name:
+        if "default" in self.image_url.name:
             print("default image used")
         else:
             print("thumbnail was created")
