@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "corsheaders",
     "rest_framework_simplejwt",
-    "whitenoise.runserver_nostatic",
+    # "whitenoise.runserver_nostatic",
+    "whitenoise",
     "rest_framework_simplejwt.token_blacklist",
     "django_cleanup.apps.CleanupConfig",
 ]
