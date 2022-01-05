@@ -34,7 +34,7 @@ class ProductMediaSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     images = ProductMediaSerializer(many=True, read_only=True)
-    category = CategorySerializer()
+    category = CategorySerializer(read_only=True)
 
     class Meta:
         model = Product
@@ -53,6 +53,9 @@ class ProductSerializer(serializers.ModelSerializer):
                     {"message": "Category Does Not Exists"}
                 )
             print("the category is", category.name)
+        import pdb
+
+        pdb.set_trace()
         product = Product.objects.create(**validated_data, category=category)
         product.save()
         return product
