@@ -42,17 +42,37 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only_fields = ["category", "merchant"]
 
     def create(self, validated_data):
-        category = self.initial_data["category"]
+        category_id = self.initial_data.get("category")
         print(validated_data)
         print(self.initial_data)
-        try:
-            category = Category.objects.get(id=category)
-        except:
-            raise serializers.ValidationError({"message": "Category Does Not Exists"})
-        print("the category is", category.name)
+        if category_id:
+            try:
+                category = Category.objects.get(id=category_id)
+            except:
+                raise serializers.ValidationError(
+                    {"message": "Category Does Not Exists"}
+                )
+            print("the category is", category.name)
         product = Product.objects.create(**validated_data, category=category)
         product.save()
         return product
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        category_id = self.initial_data.get("category")
+        print(validated_data)
+        print(self.initial_data)
+        if category_id:
+            try:
+                category = Category.objects.get(id=category_id)
+            except:
+                raise serializers.ValidationError(
+                    {"message": "Category Does Not Exists"}
+                )
+            print("the category is", category.name)
+            instance.category = category
+
+        return instance
 
 
 class ProductQuestionSerializer(serializers.ModelSerializer):

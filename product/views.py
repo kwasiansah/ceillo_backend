@@ -101,8 +101,8 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         if getattr(instance, "_prefetched_objects_cache", None):
             instance._prefetched_objects_cache = {}
-
-        data = {"message": "Product Successfully Updated"}
+        product = ProductSerializer(serializer.instance)
+        data = {"data": product.data, "message": "Product Successfully Updated"}
         return Response(data, status.HTTP_200_OK)
 
 
