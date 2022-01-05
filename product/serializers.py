@@ -71,7 +71,7 @@ class ProductSerializer(serializers.ModelSerializer):
                 )
             print("the category is", category.name)
             instance.category = category
-
+            instance.save()
         return instance
 
 
