@@ -94,7 +94,9 @@ class ProductViewSet(viewsets.ModelViewSet):
         if request.FILES.getlist("images"):
             ProductMedia.objects.filter(product=instance).delete()
             for media in request.FILES.getlist("images"):
-                ProductMedia.objects.create(product=serializer.instance, image=media)
+                ProductMedia.objects.create(
+                    product=serializer.instance, image_url=media
+                )
             print("images updated")
 
         if getattr(instance, "_prefetched_objects_cache", None):
@@ -130,7 +132,7 @@ def postproduct(request):
     serializer.is_valid(raise_exception=True)
     serializer.save(merchant=request.user.merchant)
     for media in request.FILES.getlist("images"):
-        ProductMedia.objects.create(product=serializer.instance, image=media)
+        ProductMedia.objects.create(product=serializer.instance, image_url=media)
     product = ProductSerializer(serializer.instance)
     print(product.data)
     data = {"message": "Product Successfully Posted"}
