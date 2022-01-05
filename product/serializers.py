@@ -53,9 +53,6 @@ class ProductSerializer(serializers.ModelSerializer):
                     {"message": "Category Does Not Exists"}
                 )
             print("the category is", category.name)
-        import pdb
-
-        pdb.set_trace()
         product = Product.objects.create(**validated_data, category=category)
         product.save()
         return product
