@@ -103,7 +103,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         data = {"message": "Product Successfully Updated"}
-        return Response(data, status.http_200_ok)
+        return Response(data, status.HTTP_200_OK)
 
 
 class ProductQuestionViewSet(viewsets.ModelViewSet):
