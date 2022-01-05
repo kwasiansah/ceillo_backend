@@ -137,7 +137,8 @@ class Product(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        self.url_slug = get_url_slug(self.name)
+        if self.name not in self.url_slug:
+            self.url_slug = get_url_slug(self.name)
         print(self.url_slug)
         super().save(*args, **kwargs)
 
