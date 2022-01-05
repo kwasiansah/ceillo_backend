@@ -81,6 +81,28 @@ class ProductViewSet(viewsets.ModelViewSet):
         print("general products retrieved")
         return queryset
 
+    def update(self, request, *args, **kwargs):
+        print(request.data)
+        print()
+        print(request.FILES)
+        partial = kwargs.pop("partial", True)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        print("product created")
+        if request.FILES.getlist("images"):
+            ProductMedia.objects.filter(product=instance).delete()
+            for media in request.FILES.getlist("images"):
+                ProductMedia.objects.create(product=serializer.instance, image=media)
+            print("images updated")
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            instance._prefetched_objects_cache = {}
+
+        data = {"message": "Product Successfully Updated"}
+        return Response(data, status.http_200_ok)
+
 
 class ProductQuestionViewSet(viewsets.ModelViewSet):
     serializer_class = ProductQuestionSerializer
