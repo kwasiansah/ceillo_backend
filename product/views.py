@@ -85,6 +85,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         print(request.data)
         print()
         print(request.FILES)
+        size = 0
         partial = kwargs.pop("partial", True)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -94,6 +95,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         if request.FILES.getlist("images"):
             ProductMedia.objects.filter(product=instance).delete()
             for media in request.FILES.getlist("images"):
+                size += media.size
                 ProductMedia.objects.create(
                     product=serializer.instance, image_url=media
                 )
@@ -102,6 +104,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         if getattr(instance, "_prefetched_objects_cache", None):
             instance._prefetched_objects_cache = {}
         product = ProductSerializer(serializer.instance)
+        print("the file size is: ", size / 1000000, "MB")
         data = {"data": product.data, "message": "Product Successfully Updated"}
         return Response(data, status.HTTP_200_OK)
 
@@ -125,6 +128,7 @@ class ProductReviewViewSet(viewsets.ModelViewSet):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated, IsMerchant])
 def postproduct(request):
+    size = 0
     print(request.data)
     print()
     print(request.FILES)
@@ -132,8 +136,11 @@ def postproduct(request):
     serializer.is_valid(raise_exception=True)
     serializer.save(merchant=request.user.merchant)
     for media in request.FILES.getlist("images"):
+        size += media.size
         ProductMedia.objects.create(product=serializer.instance, image_url=media)
     product = ProductSerializer(serializer.instance)
+    print("the file size is: ", size / 1000000, "MB")
+
     print(product.data)
     data = {"message": "Product Successfully Posted"}
     return Response(data, status.HTTP_200_OK)
