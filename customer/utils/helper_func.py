@@ -87,7 +87,7 @@ def password_reset_email(user, token):
     subject = "Your password reset "
     sender = settings.EMAIL_HOST_USER
     # remember to make this link dynamic
-    logo_link = "https://ceillo-app.herokuapp.com/media/default/ceillo.svg"
+    logo_link = constant.LOGO_URL
     to = [user.email]
     template_name = constant.PASSWORD_RESET_TEMPLATE
     template_data = {
@@ -109,7 +109,7 @@ def password_reset_email(user, token):
 
 
 def send_verify_email(user, request=None):
-    logo_link = request.build_absolute_uri(location="/media/default/ceillo.svg")
+    logo_link = constant.LOGO_URL
     token = create_token(user, 60 * 5, "verify")
     link = f"https://ceillo.netlify.app/verify-email/{token}/"
     print(token)
