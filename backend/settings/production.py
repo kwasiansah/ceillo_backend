@@ -249,11 +249,21 @@ EMAIL_HOST_PASSWORD = "ceillo@123"
 # this defines the time it takes the token to expire
 EMAIL_RESET_TOKEN_TIMEOUT_MIN = 60
 
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         # "LOCATION": "redis://127.0.0.1:6379/1",
+#         "LOCATION": "redis://:pb9c635f068b47844b4edf6b9862de8ccbfc0140407593ee79ddf2d5c1885199d@ec2-34-226-88-29.compute-1.amazonaws.com:18699",
+#         "OPTION": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         },
+#     }
+# }
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         # "LOCATION": "redis://127.0.0.1:6379/1",
-        "LOCATION": "redis://:pb9c635f068b47844b4edf6b9862de8ccbfc0140407593ee79ddf2d5c1885199d@ec2-34-226-88-29.compute-1.amazonaws.com:18699",
+        "LOCATION": "redis://:pb9c635f068b47844b4edf6b9862de8ccbfc0140407593ee79ddf2d5c1885199d@ec2-3-223-169-101.compute-1.amazonaws.com:11320",
         "OPTION": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
