@@ -254,7 +254,7 @@ CACHES = {
         "BACKEND": "django_redis.cache.RedisCache",
         # "LOCATION": "redis://127.0.0.1:6379/1",
         ""
-        "LOCATION": "redis://:pb9c635f068b47844b4edf6b9862de8ccbfc0140407593ee79ddf2d5c1885199d@ec2-3-223-169-101.compute-1.amazonaws.com:11319",
+        "LOCATION": os.environ.get('REDIS_URL'),
         "OPTION": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
