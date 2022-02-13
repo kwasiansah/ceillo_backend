@@ -21,3 +21,4 @@ backend/media/reviews
 manage.py
 backend/static/
 backend/media/
+**dev_env
