@@ -76,6 +76,8 @@ class Address(models.Model):
     customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
     hostel = models.CharField(max_length=250, null=True, blank=True)
     room_number = models.CharField(max_length=10, null=True, blank=True)
+    city = models.CharField(max_length=250, blank=True, null=True)
+    region = models.CharField(max_length=250, blank=True, null=True)
 
 
 class Merchant(models.Model):

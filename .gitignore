@@ -3,8 +3,7 @@
 princepk.py
 base.py
 ceillo.sqlite3
-/__pycache__
-/__pycache__/**
+**__pycache__/
 /email
 
 /migrations/
