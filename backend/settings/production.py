@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     "product.apps.ProductConfig",
     "customer.apps.CustomerConfig",
+    "cart.apps.CartConfig",
     "admin_interface",
     "colorfield",
     "django.contrib.admin",
@@ -58,6 +59,7 @@ INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     "rest_framework_simplejwt.token_blacklist",
     "django_cleanup.apps.CleanupConfig",
+    
 ]
 
 MIDDLEWARE = [

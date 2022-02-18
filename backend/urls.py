@@ -46,6 +46,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path("auth/", include("customer.urls")),
     path("products/", include("product.urls")),
+    path("cart/", include("cart.urls")),
     path("admin/", admin.site.urls),
     path("docs/", include_docs_urls(title="Polls API")),
     path("__debug__/", include(debug_toolbar.urls)),

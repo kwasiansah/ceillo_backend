@@ -42,6 +42,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     "product.apps.ProductConfig",
     "customer.apps.CustomerConfig",
+    "cart.apps.CartConfig",
     "admin_interface",
     "colorfield",
     "django.contrib.admin",
@@ -166,7 +167,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 DEBUG_TOOLBAR_PANELS = [
     "debug_toolbar.panels.history.HistoryPanel",
     "debug_toolbar.panels.versions.VersionsPanel",
