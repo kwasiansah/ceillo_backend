@@ -1,4 +1,5 @@
 from .base import *
+from . import base
 import os
 import dj_database_url
 
@@ -17,7 +18,8 @@ ALLOWED_HOSTS = [
 PRODUCTION_APPS = [
     # "whitenoise.runserver_nostatic",
 ]
-INSTALLED_APPS += PRODUCTION_APPS
+
+base.INSTALLED_APPS += PRODUCTION_APPS
 
 
 # MIDDLEWARES
@@ -79,7 +81,7 @@ EMAIL_HOST_PASSWORD = "ceillo@123"
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.environ["REDIS_URL"],
+        "LOCATION": os.environ.get("REDIS_URL", "redis://: pb9c635f068b47844b4edf6b9862de8ccbfc0140407593ee79ddf2d5c1885199d@ec2-44-193-224-177.compute-1.amazonaws.com:12509"),
         "OPTION": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
