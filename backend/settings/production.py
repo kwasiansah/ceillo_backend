@@ -42,6 +42,17 @@ DATABASES = {
 db_from_env = dj_database_url.config(conn_max_age=600)
 DATABASES["default"].update(db_from_env)
 
+if os.environ.get('GITHUB_WORKFLOW'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'ceillo',
+            'USER': 'ceillo',
+            'PASSWORD': 'ceillo@123',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+        }
+    }
 
 # STATIC FILES
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
