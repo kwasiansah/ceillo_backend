@@ -21,3 +21,6 @@ manage.py
 backend/static/
 backend/media/
 **dev_env
+.vscode/
+.pytest_cache/
+fixtures.json

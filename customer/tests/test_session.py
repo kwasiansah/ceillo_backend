@@ -227,7 +227,7 @@ def test_create_email_already_exits(django_db_blocker, client):
     with django_db_blocker.unblock():
         data = {
             "email": "testing@gmail.com",
-            "password": "prince",
+            "password": "princepk@123",
             "password2": "princepk@123",
             "first_name": "mouse",
             "last_name": "ansah",
@@ -238,8 +238,10 @@ def test_create_email_already_exits(django_db_blocker, client):
         create = reverse("user_create")
         response = client.post(path=create, data=data)
     print(response.data)
-    assert str(response.data["email"]["message"]) == "Email Already Exists"
-    assert response.data["email"]["message"].code == 400
+    # assert response.data['message'] == f'An Email Has Been Sent To TESTING@GMAIL.COM'
+    assert str(response.data["message"]) == "Email Already Exists"
+    assert response.data["message"].code == 422
+    # assert response.status_code == 200
 
 
 def test_create_successfull(django_db_blocker, client):
@@ -257,7 +259,9 @@ def test_create_successfull(django_db_blocker, client):
         create = reverse("user_create")
         response = client.post(path=create, data=data)
     print(response.data)
-    assert "token" in response.data.keys()
+    # assert "token" in response.data.keys()
+    # assert response.status_code == 201
+    assert response.data["message"] == "An Email Has Been Sent To mouse@gmail.com"
     assert response.status_code == 201
 
 

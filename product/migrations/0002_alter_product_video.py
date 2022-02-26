@@ -8,13 +8,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('product', '0001_initial'),
+        ("product", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='product',
-            name='video',
-            field=models.FileField(blank=True, default='default/defaultvid.mp4', null=True, storage=cloudinary_storage.storage.VideoMediaCloudinaryStorage, upload_to='products/video/', validators=[cloudinary_storage.validators.validate_video]),
+            model_name="product",
+            name="video",
+            field=models.FileField(
+                blank=True,
+                default="default/defaultvid.mp4",
+                null=True,
+                storage=cloudinary_storage.storage.VideoMediaCloudinaryStorage,
+                upload_to="products/video/",
+                validators=[cloudinary_storage.validators.validate_video],
+            ),
         ),
     ]

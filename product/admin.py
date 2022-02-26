@@ -27,7 +27,6 @@ class AdminCollection(admin.ModelAdmin):
 
 @admin.register(Category)
 class AdminCategory(admin.ModelAdmin):
-    print("category")
     prepopulated_fields = {"url_slug": ("name",)}
     readonly_fields = ["thumbnail_image"]
 

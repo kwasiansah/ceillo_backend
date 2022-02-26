@@ -1,19 +1,20 @@
 from rest_framework import serializers
 from .models import Cart, CartItem
+from product.serializers import ProductSerializer
+
 
 class CartItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+
     class Meta:
         model = CartItem
-        fields = ["quantity", "product", "cart"]
-        read_only_fields = ["product", "cart"]
-    
+        fields = ["quantity", "product"]
+
+
 class CartSerializer(serializers.ModelSerializer):
-    totalPrice = serializers.SerializerMethodField()
     items = CartItemSerializer(many=True)
+
     class Meta:
         model = Cart
-        fields = ["totalPrice", "items"]
+        fields = ["items"]
         read_only_fields = ["customer"]
-        
-    def get_totalPrice(self, obj):
-        return obj.totalPrice

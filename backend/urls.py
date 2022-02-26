@@ -28,7 +28,6 @@ from rest_framework.documentation import include_docs_urls
 # schema_view = get_swagger_view(title='Polls API')
 
 
-
 schema_view = get_schema_view(
     openapi.Info(
         title="Ceillo API'S",
@@ -47,6 +46,7 @@ urlpatterns = [
     path("auth/", include("customer.urls")),
     path("products/", include("product.urls")),
     path("cart/", include("cart.urls")),
+    path("search/", include("search.urls")),
     path("admin/", admin.site.urls),
     path("docs/", include_docs_urls(title="Polls API")),
     path("__debug__/", include(debug_toolbar.urls)),

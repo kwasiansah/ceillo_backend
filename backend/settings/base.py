@@ -40,18 +40,27 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    "product.apps.ProductConfig",
-    "customer.apps.CustomerConfig",
-    "cart.apps.CartConfig",
+    #THIRD PARTY APPS THAT NEED TO COME BEFORE DJANGO APPS
     "admin_interface",
     "colorfield",
+    "cloudinary_storage",
+    
+    # DJANGO APPS
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "cloudinary_storage",
+    "django.contrib.postgres",
     "django.contrib.staticfiles",
+
+    # PROJECT APPS
+    "customer.apps.CustomerConfig",
+    "product.apps.ProductConfig",
+    "cart.apps.CartConfig",
+    "search.apps.SearchConfig",
+    
+    # THIRD PARTY APPS
     "cloudinary",
     "drf_yasg",
     "rest_framework",
@@ -192,6 +201,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
     "https://ceillo.netlify.app",
+    "https://www.ceillo.shop",
+    "https://ceillo.shop",
 ]
 
 
@@ -233,6 +244,8 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
+    # "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    # "PAGE_SIZE": 9,
 }
 
 # NON_FIELD_ERRORS_KEY = 'message' not work needs to be in restframework

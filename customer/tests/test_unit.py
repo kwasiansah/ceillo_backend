@@ -33,6 +33,7 @@ def user_detail():
         "is_staff": True,
         "is_superuser": True,
         "status": "AC",
+        "verified_email": True,
     }
     return data
 
@@ -214,7 +215,7 @@ def test_create_password_do_match(db, client):
 def test_create_email_already_exits(create_user, client):
     data = {
         "email": "testing@gmail.com",
-        "password": "prince",
+        "password": "princepk@123",
         "password2": "princepk@123",
         "first_name": "mouse",
         "last_name": "ansah",
@@ -225,8 +226,8 @@ def test_create_email_already_exits(create_user, client):
     create = reverse("user_create")
     response = client.post(path=create, data=data)
     print(response.data)
-    assert str(response.data["email"]["message"]) == "Email Already Exists"
-    assert response.data["email"]["message"].code == 400
+    assert str(response.data["message"]) == "Email Already Exists"
+    assert response.data["message"].code == 422
 
 
 def test_create_successfull(db, client):
@@ -243,7 +244,9 @@ def test_create_successfull(db, client):
     create = reverse("user_create")
     response = client.post(path=create, data=data)
     print(response.data)
-    assert "token" in response.data.keys()
+    # assert "token" in response.data.keys()
+    # assert response.status_code == 201
+    assert response.data["message"] == "An Email Has Been Sent To mouse@gmail.com"
     assert response.status_code == 201
 
 
@@ -413,24 +416,24 @@ def test_user_delete(client, login_details):
     assert response.data["message"] == "Account Deleted"
 
 
-def test_verify_email(client, db):
-    BASE_DIR = settings.BASE_DIR
-    settings.EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+# def test_verify_email(client, db):
+#     BASE_DIR = settings.BASE_DIR
+#     settings.EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 
-    settings.EMAIL_FILE_PATH = os.path.join(BASE_DIR.parent, "email")
-    data = {
-        "email": "mouse@gmail.com",
-        "password": "princepk@123",
-        "password2": "princepk@123",
-        "first_name": "mouse",
-        "last_name": "ansah",
-        "university": "KNUST",
-        "phone_number": "0200758003",
-        "agreed_to_terms": True,
-    }
-    create = reverse("user_create")
-    response = client.post(path=create, data=data)
-    print(response.data)
-    # verify_response = client.post
-    assert "token" in response.data.keys()
-    assert response.status_code == 201
+#     settings.EMAIL_FILE_PATH = os.path.join(BASE_DIR.parent, "email")
+#     data = {
+#         "email": "mouse@gmail.com",
+#         "password": "princepk@123",
+#         "password2": "princepk@123",
+#         "first_name": "mouse",
+#         "last_name": "ansah",
+#         "university": "KNUST",
+#         "phone_number": "0200758003",
+#         "agreed_to_terms": True,
+#     }
+#     create = reverse("user_create")
+#     response = client.post(path=create, data=data)
+#     print(response.data)
+#     # verify_response = client.post
+#     assert "token" in response.data.keys()
+#     assert response.status_code == 201
