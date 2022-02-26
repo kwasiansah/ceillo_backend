@@ -10,14 +10,6 @@ User = get_user_model()
 
 @pytest.fixture(scope="session")
 def django_db_setup(django_db_setup, django_db_blocker):
-    settings.DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': '127.0.0.1',
-        'NAME': 'ceillo',
-        'PORT': 5432,
-        'USER': 'ceillo',
-        'PASSWORD': 'ceillo@123'
-    }
     with django_db_blocker.unblock():
         data = {
             "email": "thomas@gmail.com",
