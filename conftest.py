@@ -1,3 +1,4 @@
+from django.conf import settings
 import pytest
 from django.contrib.auth import get_user_model
 from django.urls.base import reverse
@@ -9,6 +10,14 @@ User = get_user_model()
 
 @pytest.fixture(scope="session")
 def django_db_setup(django_db_setup, django_db_blocker):
+    settings.DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.postgres',
+        'HOST': '127.0.0.1',
+        'NAME': 'ceillo',
+        'PORT': 5432,
+        'USER': 'ceillo',
+        'PASSWORD': 'ceillo@123'
+    }
     with django_db_blocker.unblock():
         data = {
             "email": "thomas@gmail.com",
