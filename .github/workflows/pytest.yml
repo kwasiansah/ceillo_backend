@@ -72,4 +72,7 @@ jobs:
       - name: Run Tests
         run: |
           pytest
-          
+        env:
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
+          CACHE_REDIS_LOCATION: redis://redis:6379
