@@ -49,6 +49,7 @@ if os.environ.get('GITHUB_WORKFLOW'):
             'NAME': 'ceillo',
             'USER': 'ceillo',
             'PASSWORD': 'ceillo@123',
+            'HOST': 'postgres',
         }
     }
 
