@@ -49,7 +49,7 @@ if os.environ.get('GITHUB_WORKFLOW'):
             'NAME': 'ceillo',
             'USER': 'ceillo',
             'PASSWORD': 'ceillo@123',
-            'HOST': 'localhost',
+            'HOST': '127.0.0.1',
             'PORT': '5432',
         }
     }
