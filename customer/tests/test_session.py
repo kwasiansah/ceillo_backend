@@ -1,12 +1,10 @@
+from ..utils.helper_func import create_token
+from ..response_mesages import CustomerMessages
 import json
 
 import pytest
 from django.contrib.auth import get_user_model
-from django.test.client import Client
 from django.urls import reverse
-from rest_framework import serializers
-
-from customer.models import Merchant
 
 User = get_user_model()
 ################################################################
@@ -32,31 +30,14 @@ def user_detail():
         "is_staff": True,
         "is_superuser": True,
         "status": "ACTIVE",
-        "verified_email": True,
+        "verified_email": True
     }
     return data
 
 
-@pytest.fixture(scope="session")
-def create_user(user_detail, django_db_blocker):
-    # first_name = 'test'
-    # last_name = 'unit'
-    # email = 'testing@gmail.com'
-    # phone_number = '0200843453'
-    # agreed_to_terms = True
-    # university = 'KNUST'
-    #  = '30-6-1943'
-    # password = 'password'
-    # user_a = User.objects.create_user(first_name=first_name, password=password, last_name=last_name, email=email, phone_number=phone_number,
-    #                                   agreed_to_terms=agreed_to_terms, university=university, =)
-    # user_a.is_active = True
-    # user_a.is_staff = True
-    # user_a.is_superuser = True
-    # user_a.status = 'AC'
-    # user_a.set_password('password')
-    # user_a.save()
-    with django_db_blocker.unblock():
-        user_a = User.objects.create_user(**user_detail)
+@pytest.fixture()
+def create_user(user_detail, db):
+    user_a = User.objects.create_user(**user_detail)
     return user_a
 
 
@@ -80,15 +61,6 @@ def test_login(django_db_blocker, client):
         response = client.post(path=login, data=data)
     print(response.data)
     assert response
-
-
-@pytest.fixture()
-def login_details(client, django_db_blocker):
-    with django_db_blocker.unblock():
-        login = reverse("login")
-        data = {"email": "testing@gmail.com", "password": password}
-        response = client.post(path=login, data=data)
-    return [response.data["access"], response.data["refresh"]]
 
 
 ################################################################
@@ -116,33 +88,30 @@ def test_detail(login_details, client, django_db_blocker):
 ################################################################
 
 
-def test_put(login_details, client, django_db_blocker):
-    with django_db_blocker.unblock():
-        update = reverse("user_update")
-        data = {"first_name": "kwame"}
-        response = client.put(
-            path=update,
-            data=data,
-            HTTP_AUTHORIZATION="Bearer " + login_details[0],
-            fromat=json,
-            content_type="application/json",
-        )
+def test_put(login_details, client, db):
+    update = reverse("user_update")
+    data = {"first_name": "kwame"}
+    response = client.put(
+        path=update,
+        data=data,
+        HTTP_AUTHORIZATION="Bearer " + login_details[0],
+        fromat=json,
+        content_type="application/json",
+    )
     print(response.data)
     assert "kwame" in str(response.data)
 
 
-def test_patch(login_details, client, django_db_blocker):
-    with django_db_blocker.unblock():
-        update = reverse("user_update")
-        data = {"first_name": "kwame"}
-        response = client.patch(
-            path=update,
-            data=data,
-            HTTP_AUTHORIZATION="Bearer " + login_details[0],
-            fromat=json,
-            content_type="application/json",
-        )
-    print(response.data)
+def test_patch(login_details, client, db):
+    update = reverse("user_update")
+    data = {"first_name": "kwame"}
+    response = client.patch(
+        path=update,
+        data=data,
+        HTTP_AUTHORIZATION="Bearer " + login_details[0],
+        fromat=json,
+        content_type="application/json",
+    )
     assert "kwame" in str(response.data)
 
 
@@ -172,7 +141,7 @@ def test_password_change(login_details, client, django_db_blocker):
     print(user)
     print()
     print(response.data)
-    assert user.check_password("password")
+    assert user.check_password("password") == False
     assert response.renderer_context["request"].user.check_password(
         "testpassword"
     )
@@ -225,26 +194,32 @@ def test_create_password_do_match(django_db_blocker, client):
 # if you need to review the name tuple go to python Collections.__init__.OrderedDict
 
 
-def test_create_email_already_exits(django_db_blocker, client):
-    with django_db_blocker.unblock():
-        data = {
-            "email": "testing@gmail.com",
-            "password": "princepk@123",
-            "password2": "princepk@123",
-            "first_name": "mouse",
-            "last_name": "ansah",
-            "university": "KNUST",
-            "phone_number": "0200758003",
-            "terms": True,
-        }
-        create = reverse("user_create")
-        response = client.post(path=create, data=data)
+def test_verify_account(db, client, create_user):
+    create_user.verified_email = False
+    create_user.save()
+    token = create_token(create_user, 60, "verify")
+    endpoint = reverse('verify-email')
+    response = client.post(path=endpoint, data={"token": token})
+    assert response.data['message'] == CustomerMessages.EMAIL_VERIFIED
+    assert response.status_code == 200
+
+
+def test_create_email_already_exits(client, create_user):
+    data = {
+        "email": "testing@gmail.com",
+        "password": "princepk@123",
+        "password2": "princepk@123",
+        "first_name": "mouse",
+        "last_name": "ansah",
+        "university": "KNUST",
+        "phone_number": "0200758003",
+        "terms": True,
+    }
+    create = reverse("user_create")
+    response = client.post(path=create, data=data)
     print(response.data)
-    # assert response.data['message'] == f'An Email Has Been Sent To TESTING@GMAIL.COM'
     assert str(response.data["message"]) == "Email Already Exists"
     assert response.data["message"].code == 422
-    # assert response.status_code == 200
-
 
 def test_create_successfull(django_db_blocker, client):
     with django_db_blocker.unblock():

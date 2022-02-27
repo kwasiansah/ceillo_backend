@@ -89,7 +89,6 @@ def user_update(request):
             serializer.save()
         else:
             data = {
-                "status": "okay",
                 "data": serializer.data,
                 "message": "invalid data to update",
             }
@@ -102,7 +101,6 @@ def user_update(request):
             serializer.save()
         else:
             data = {
-                "status": "okay",
                 "data": serializer.data,
                 "message": "invalid data to patch",
             }

@@ -1,15 +1,10 @@
+from ..response_mesages import CustomerMessages
+from ..utils.helper_func import create_token
 import json
-import os
 
 import pytest
-import pytest_django
-from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test.client import Client
 from django.urls import reverse
-from rest_framework import serializers
-
-from customer.models import Merchant
 
 User = get_user_model()
 ################################################################
@@ -40,21 +35,6 @@ def user_detail():
 
 @pytest.fixture()
 def create_user(user_detail, db):
-    # first_name = 'test'
-    # last_name = 'unit'
-    # email = 'testing@gmail.com'
-    # phone_number = '0200843453'
-    # agreed_to_terms = True
-    # university = 'KNUST'
-    # password = 'password'
-    # user_a = User.objects.create_user(first_name=first_name, password=password, last_name=last_name, email=email, phone_number=phone_number,
-    #                                   agreed_to_terms=agreed_to_terms, university=university, date_of_birth=date_of_birth)
-    # user_a.is_active = True
-    # user_a.is_staff = True
-    # user_a.is_superuser = True
-    # user_a.status = 'AC'
-    # user_a.set_password('password')
-    # user_a.save()
     user_a = User.objects.create_user(**user_detail)
     return user_a
 
@@ -214,7 +194,14 @@ def test_create_password_do_match(db, client):
 
 
 # if you need to review the name tuple go to python collections.__init__.OrderedDict
-
+def test_verify_account(db, client, create_user):
+    create_user.verified_email = False
+    create_user.save()
+    token = create_token(create_user, 60, "verify")
+    endpoint = reverse('verify-email')
+    response = client.post(path=endpoint, data={"token": token})
+    assert response.data['message'] == CustomerMessages.EMAIL_VERIFIED
+    assert response.status_code == 200
 
 def test_create_email_already_exits(create_user, client):
     data = {

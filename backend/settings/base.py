@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     #THIRD PARTY APPS THAT NEED TO COME BEFORE DJANGO APPS
     "admin_interface",
     "colorfield",
-    "cloudinary_storage",
     
     # DJANGO APPS
     "django.contrib.admin",
@@ -49,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.postgres",
+    "cloudinary_storage",
     "django.contrib.staticfiles",
 
     # PROJECT APPS
