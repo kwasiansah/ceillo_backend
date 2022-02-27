@@ -81,7 +81,7 @@ jobs:
         run: |
           git config --local user.email "kwasiansahasare@gmail.com"
           git config --local user.name "kwasiansah"
-          git checkout Master
+          git checkout master
           git merge dev
       
         # - name: Merge dev > master
