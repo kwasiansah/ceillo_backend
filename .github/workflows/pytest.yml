@@ -83,4 +83,4 @@ jobs:
         with: 
           type: now 
           target_branch: master
-          github_token: ${{PERSONAL_GTIHUB_TOKEN}}
+          github_token: ${{PERSONAL_GITHUB_TOKEN}}
