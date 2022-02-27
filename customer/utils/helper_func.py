@@ -27,12 +27,16 @@ def create_token(user, time, type):
     print(user)
     # integrity error
     try:
-        token = AuthToken.objects.create(user=user, expire=expire(time), type=type)
+        token = AuthToken.objects.create(
+            user=user, expire=expire(time), type=type
+        )
     except IntegrityError:
 
         token = AuthToken.objects.get(user=user)
         token.delete()
-        token = AuthToken.objects.create(user=user, expire=expire(time), type=type)
+        token = AuthToken.objects.create(
+            user=user, expire=expire(time), type=type
+        )
     token.save()
     return token
 
@@ -66,14 +70,18 @@ def payload(request):
     print("hi")
     try:
         payload = jwt.decode(
-            request, key=settings.SIMPLE_JWT["SIGNING_KEY"], algorithms=["HS256"]
+            request,
+            key=settings.SIMPLE_JWT["SIGNING_KEY"],
+            algorithms=["HS256"],
         )
     except jwt.exceptions.DecodeError:
         raise AuthenticationFailed({"detail": "token not provided"})
     return payload
 
 
-def generic_email(user, subject, link, sender, to, template_name, template_data):
+def generic_email(
+    user, subject, link, sender, to, template_name, template_data
+):
     html_content = render_to_string(template_name, template_data)
     text_content = strip_tags(html_content)
     email = EmailMultiAlternatives(subject, text_content, sender, to)
@@ -140,7 +148,8 @@ def validate_email(request):
 
     if user.verified_email:
         raise UnprocessableEntity(
-            {"message": "Email Already Exists"}, status.HTTP_422_UNPROCESSABLE_ENTITY
+            {"message": "Email Already Exists"},
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
         )
     else:
         email = send_verify_email(user, request)

@@ -173,7 +173,9 @@ def test_password_change(login_details, client, django_db_blocker):
     print()
     print(response.data)
     assert user.check_password("password")
-    assert response.renderer_context["request"].user.check_password("testpassword")
+    assert response.renderer_context["request"].user.check_password(
+        "testpassword"
+    )
     assert response.status_code == 200
 
 
@@ -261,7 +263,9 @@ def test_create_successfull(django_db_blocker, client):
     print(response.data)
     # assert "token" in response.data.keys()
     # assert response.status_code == 201
-    assert response.data["message"] == "An Email Has Been Sent To mouse@gmail.com"
+    assert (
+        response.data["message"] == "An Email Has Been Sent To mouse@gmail.com"
+    )
     assert response.status_code == 201
 
 
@@ -301,7 +305,10 @@ def test_user_list(django_db_blocker, client, login_details):
             content_type="application/json",
         )
     print(response.data)
-    assert "id" in response.data["data"][0] and "email" in response.data["data"][0]
+    assert (
+        "id" in response.data["data"][0]
+        and "email" in response.data["data"][0]
+    )
     assert response.status_code == 200
 
 
@@ -327,7 +334,9 @@ def login_detail(client, django_db_blocker):
     yield [response.data["access"], response.data["refresh"]]
 
 
-def test_merchant_create(client, login_detail, merchant_data, django_db_blocker):
+def test_merchant_create(
+    client, login_detail, merchant_data, django_db_blocker
+):
     with django_db_blocker.unblock():
         login_details = login_detail
         endpoint = reverse("user-merchant-create")
@@ -342,7 +351,9 @@ def test_merchant_create(client, login_detail, merchant_data, django_db_blocker)
     assert response.status_code == 201
 
 
-def test_user_already_merchant(login_detail, merchant_data, client, django_db_blocker):
+def test_user_already_merchant(
+    login_detail, merchant_data, client, django_db_blocker
+):
     with django_db_blocker.unblock():
         login_details = login_detail
         endpoint = reverse("user-merchant-create")

@@ -5,7 +5,11 @@ from product.models import Product
 
 class Cart(models.Model):
     customer = models.ForeignKey(
-        Customer, on_delete=models.CASCADE, null=False, blank=False, related_name="cart"
+        Customer,
+        on_delete=models.CASCADE,
+        null=False,
+        blank=False,
+        related_name="cart",
     )
 
     @property
@@ -18,7 +22,11 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     cart = models.ForeignKey(
-        Cart, on_delete=models.CASCADE, null=False, blank=False, related_name="items"
+        Cart,
+        on_delete=models.CASCADE,
+        null=False,
+        blank=False,
+        related_name="items",
     )
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, null=False, blank=False

@@ -2,9 +2,9 @@ name: Pytest CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ dev, master ]
   pull_request:
-    branches: [ master ]
+    branches: [ dev, master ]
 
 jobs:
   build:
@@ -76,3 +76,11 @@ jobs:
           POSTGRES_HOST: postgres
           POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
           CACHE_REDIS_LOCATION: redis://redis:6379
+
+      - name: Merge dev > master
+        if: github.ref == 'refs/heads/dev' && ${{success()}}
+        uses: devmasx/merge-branch@master
+        with: 
+          type: now 
+          target_branch: master
+          github_token: ${{PERSONAL_GTIHUB_TOKEN}}

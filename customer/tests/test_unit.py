@@ -97,7 +97,9 @@ def login_details(client, create_user):
 
 def test_detail(login_details, client):
     detail = reverse("user_detail")
-    response = client.get(path=detail, HTTP_AUTHORIZATION="Bearer " + login_details[0])
+    response = client.get(
+        path=detail, HTTP_AUTHORIZATION="Bearer " + login_details[0]
+    )
     user = response.renderer_context["request"].user
     print(response.data)
     assert response.data["data"]["email"] == user.email
@@ -163,7 +165,9 @@ def test_password_change(login_details, client):
     print()
     print(response.data)
     assert user.check_password("password")
-    assert response.renderer_context["request"].user.check_password("testpassword")
+    assert response.renderer_context["request"].user.check_password(
+        "testpassword"
+    )
     assert response.status_code == 200
 
 
@@ -246,7 +250,9 @@ def test_create_successfull(db, client):
     print(response.data)
     # assert "token" in response.data.keys()
     # assert response.status_code == 201
-    assert response.data["message"] == "An Email Has Been Sent To mouse@gmail.com"
+    assert (
+        response.data["message"] == "An Email Has Been Sent To mouse@gmail.com"
+    )
     assert response.status_code == 201
 
 
@@ -285,7 +291,10 @@ def test_user_list(db, client, login_details):
         content_type="application/json",
     )
     print(response.data)
-    assert "id" in response.data["data"][0] and "email" in response.data["data"][0]
+    assert (
+        "id" in response.data["data"][0]
+        and "email" in response.data["data"][0]
+    )
     assert response.status_code == 200
 
 
@@ -374,7 +383,9 @@ def test_invalid_refresh_token(client, login_details):
     )
 
     print(response.data)
-    assert response.data["refresh"][0].__str__() == "This field may not be blank."
+    assert (
+        response.data["refresh"][0].__str__() == "This field may not be blank."
+    )
     assert response.status_code == 400
 
 

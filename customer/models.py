@@ -4,7 +4,6 @@ from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-from django.db.models.signals import pre_save
 from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.models import Token
 
@@ -31,7 +30,9 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     )
     is_staff = models.BooleanField(default=False)
     status = models.CharField(
-        max_length=7, choices=STATUS_CHOICES.choices, default=STATUS_CHOICES.ACTIVE
+        max_length=7,
+        choices=STATUS_CHOICES.choices,
+        default=STATUS_CHOICES.ACTIVE,
     )
     is_active = models.BooleanField(default=True)
     first_name = models.CharField(
@@ -42,7 +43,9 @@ class Customer(AbstractBaseUser, PermissionsMixin):
         _("last name"), max_length=150, blank=False, null=False
     )
     # email required
-    email = models.EmailField(_("email address"), blank=False, null=False, unique=True)
+    email = models.EmailField(
+        _("email address"), blank=False, null=False, unique=True
+    )
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
     # TODO: create a validator for the phone_number
@@ -59,7 +62,10 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     agreed_to_terms = models.BooleanField(default=False)
 
     university = models.CharField(
-        max_length=5, blank=True, null=False, choices=UNIVERSITY_CHOICES.choices
+        max_length=5,
+        blank=True,
+        null=False,
+        choices=UNIVERSITY_CHOICES.choices,
     )
     verified_email = models.BooleanField(default=False)
     objects = CustomerManager()

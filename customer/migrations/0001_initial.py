@@ -18,7 +18,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Customer",
             fields=[
-                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "password",
+                    models.CharField(max_length=128, verbose_name="password"),
+                ),
                 (
                     "last_login",
                     models.DateTimeField(
@@ -70,13 +73,17 @@ class Migration(migrations.Migration):
                 (
                     "email",
                     models.EmailField(
-                        max_length=254, unique=True, verbose_name="email address"
+                        max_length=254,
+                        unique=True,
+                        verbose_name="email address",
                     ),
                 ),
                 ("phone_number", models.CharField(max_length=10)),
                 (
                     "photo",
-                    models.ImageField(blank=True, null=True, upload_to="profile/"),
+                    models.ImageField(
+                        blank=True, null=True, upload_to="profile/"
+                    ),
                 ),
                 ("created", models.DateTimeField(auto_now_add=True)),
                 ("agreed_to_terms", models.BooleanField(default=False)),
@@ -138,7 +145,10 @@ class Migration(migrations.Migration):
                         max_length=250,
                     ),
                 ),
-                ("id_card", models.ImageField(null=True, upload_to="merchant/")),
+                (
+                    "id_card",
+                    models.ImageField(null=True, upload_to="merchant/"),
+                ),
                 (
                     "id_card_type",
                     models.CharField(
@@ -217,8 +227,14 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("hostel", models.CharField(blank=True, max_length=250, null=True)),
-                ("room_number", models.CharField(blank=True, max_length=10, null=True)),
+                (
+                    "hostel",
+                    models.CharField(blank=True, max_length=250, null=True),
+                ),
+                (
+                    "room_number",
+                    models.CharField(blank=True, max_length=10, null=True),
+                ),
                 (
                     "customer",
                     models.OneToOneField(
