@@ -14,17 +14,11 @@ ALLOWED_HOSTS = [
 
 
 # INSTALLED_APPS
-# PRODUCTION_APPS = [
-#     # "whitenoise.runserver_nostatic",
-# ]
-
-# base.INSTALLED_APPS += PRODUCTION_APPS
-
-
-# MIDDLEWARES
-PRODUCTION_MIDDLEWARE = [
-    # "whitenoise.middleware.WhiteNoiseMiddleware",
+PRODUCTION_APPS = [
+    "whitenoise.runserver_nostatic",
 ]
+
+base.INSTALLED_APPS += PRODUCTION_APPS
 
 
 # CACHES
