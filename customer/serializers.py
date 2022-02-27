@@ -131,7 +131,8 @@ class CustomerPasswordChangeSerializer(serializers.Serializer):
 
         if not self.instance.check_password(data):
             raise serializers.ValidationError(
-                {"message": "Old Password Is Invalid"}, status.HTTP_400_BAD_REQUEST
+                {"message": "Old Password Is Invalid"},
+                status.HTTP_400_BAD_REQUEST,
             )
         return data
 
@@ -139,7 +140,8 @@ class CustomerPasswordChangeSerializer(serializers.Serializer):
 
         if data["password"] != data["password2"]:
             raise serializers.ValidationError(
-                {"message": "Passwords Do Not Match"}, status.HTTP_400_BAD_REQUEST
+                {"message": "Passwords Do Not Match"},
+                status.HTTP_400_BAD_REQUEST,
             )
         return data
 
@@ -157,7 +159,8 @@ class CustomerUserPasswordResetConfirmSerializer(serializers.Serializer):
         attrs = super().validate(attrs)
         if attrs["password1"] != attrs["password2"]:
             raise serializers.ValidationError(
-                {"passwords": "Passwords Do Not Match"}, status.HTTP_400_BAD_REQUEST
+                {"passwords": "Passwords Do Not Match"},
+                status.HTTP_400_BAD_REQUEST,
             )
         return attrs
 

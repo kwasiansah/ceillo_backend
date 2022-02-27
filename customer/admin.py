@@ -5,7 +5,9 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from rest_framework_simplejwt.token_blacklist import models
-from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin
+from rest_framework_simplejwt.token_blacklist.admin import (
+    OutstandingTokenAdmin,
+)
 
 from .models import AuthToken, Customer, Merchant
 
@@ -90,7 +92,17 @@ class UserAdmin(BaseUserAdmin):
     readonly_fields = ("last_login", "thumbnail_image")
 
     fieldsets = (
-        (None, {"fields": ("email", "password", "phone_number", "agreed_to_terms")}),
+        (
+            None,
+            {
+                "fields": (
+                    "email",
+                    "password",
+                    "phone_number",
+                    "agreed_to_terms",
+                )
+            },
+        ),
         (
             "Personal info",
             {

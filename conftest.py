@@ -1,7 +1,8 @@
-from django.conf import settings
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.urls.base import reverse
+
 from customer.models import Merchant
 from product.models import Category, Product
 
@@ -25,7 +26,7 @@ def django_db_setup(django_db_setup, django_db_blocker):
             "status": "ACTIVE",
             "verified_email": True,
         }
-        user_a = User.objects.create_user(**data)
+        User.objects.create_user(**data)
 
 
 @pytest.fixture()

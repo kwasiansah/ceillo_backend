@@ -37,9 +37,14 @@ class CartView(APIView):
                     status.HTTP_404_NOT_FOUND,
                 )
 
-            serializer = CartItemSerializer(data={"quantity": int(item["quantity"])})
+            serializer = CartItemSerializer(
+                data={"quantity": int(item["quantity"])}
+            )
             serializer.is_valid(raise_exception=True)
             serializer.save(product=product, cart=cart)
             saved_items.append(serializer.data)
-        data = {"data": saved_items, "message": "Cart Item Successfully Updated"}
+        data = {
+            "data": saved_items,
+            "message": "Cart Item Successfully Updated",
+        }
         return Response(data, status.HTTP_200_OK)

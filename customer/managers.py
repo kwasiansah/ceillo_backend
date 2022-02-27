@@ -19,7 +19,8 @@ class CustomerManager(BaseUserManager):
 
         if "@" not in email:
             raise ValidationError(
-                {"message": "invalid email"}, status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"message": "invalid email"},
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
         user = self.model(email=email, **data)
         user.set_password(data["password"])

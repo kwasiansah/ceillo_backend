@@ -6,7 +6,11 @@ from django.utils.decorators import method_decorator
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import exceptions, status
-from rest_framework.decorators import api_view, parser_classes, permission_classes
+from rest_framework.decorators import (
+    api_view,
+    parser_classes,
+    permission_classes,
+)
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -26,7 +30,11 @@ from .serializers import (
     UpdateCustomerSerializer,
 )
 from .utils import constant
-from .utils.helper_func import authenticate_token, create_token, password_reset_email
+from .utils.helper_func import (
+    authenticate_token,
+    create_token,
+    password_reset_email,
+)
 
 
 @method_decorator(
@@ -65,30 +73,34 @@ def user_detail(request):
     return Response(data, status.HTTP_200_OK)
 
 
-@swagger_auto_schema(methods=["put", "patch"], request_body=UpdateCustomerSerializer)
+@swagger_auto_schema(
+    methods=["put", "patch"], request_body=UpdateCustomerSerializer
+)
 @api_view(["PUT", "PATCH"])
 @parser_classes([MultiPartParser, JSONParser])
 @permission_classes([IsAuthenticated, IsLoggedOut])
 def user_update(request):
     user = request.user
     if request.method == "PUT":
-        serializer = UpdateCustomerSerializer(user, data=request.data, partial=True)
+        serializer = UpdateCustomerSerializer(
+            user, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
         else:
             data = {
-                "status": "okay",
                 "data": serializer.data,
                 "message": "invalid data to update",
             }
             return Response(data, status.HTTP_406_NOT_ACCEPTABLE)
     else:
-        serializer = UpdateCustomerSerializer(user, data=request.data, partial=True)
+        serializer = UpdateCustomerSerializer(
+            user, data=request.data, partial=True
+        )
         if serializer.is_valid():
             serializer.save()
         else:
             data = {
-                "status": "okay",
                 "data": serializer.data,
                 "message": "invalid data to patch",
             }
@@ -241,7 +253,9 @@ def user_merchant_create(request):
         print("merchant created")
         return Response(data=data, status=status.HTTP_201_CREATED)
     else:
-        return Response({"message": "invalid data"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"message": "invalid data"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 @api_view(["POST"])
@@ -252,11 +266,16 @@ def verify_email(request):
         usr.verified_email = True
         usr.save()
         token = RefreshToken.for_user(usr)
-        serializer = RetrieveCustomerSerializer(usr, context={"request": request})
+        serializer = RetrieveCustomerSerializer(
+            usr, context={"request": request}
+        )
         data = {
             "data": serializer.data,
             "message": "Email Successfully Verified",
-            "token": {"refresh": str(token), "access": str(token.access_token)},
+            "token": {
+                "refresh": str(token),
+                "access": str(token.access_token),
+            },
         }
         return Response(data, status.HTTP_200_OK)
 
@@ -267,7 +286,11 @@ def resend_email(request):
     try:
         user = AuthToken.objects.get(key=token).user
     except AuthToken.DoesNotExist:
-        return Response({"message": "Invalid Token"}, status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"message": "Invalid Token"}, status.HTTP_400_BAD_REQUEST
+        )
     email = send_verify_email(user, request)
 
-    return Response({"message": "Verification Email Resent"}, status.HTTP_200_OK)
+    return Response(
+        {"message": "Verification Email Resent"}, status.HTTP_200_OK
+    )

@@ -1,6 +1,5 @@
 from .base import *
 from . import base
-import os
 import dj_database_url
 
 SECRET_KEY = "=%gglh9$vmlbah*d(o!6x+l%l60t%+q$m)w%vxtz2ag=m)q7sj"
@@ -15,11 +14,11 @@ ALLOWED_HOSTS = [
 
 
 # INSTALLED_APPS
-PRODUCTION_APPS = [
-    # "whitenoise.runserver_nostatic",
-]
+# PRODUCTION_APPS = [
+#     # "whitenoise.runserver_nostatic",
+# ]
 
-base.INSTALLED_APPS += PRODUCTION_APPS
+# base.INSTALLED_APPS += PRODUCTION_APPS
 
 
 # MIDDLEWARES
@@ -32,7 +31,10 @@ PRODUCTION_MIDDLEWARE = [
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.environ.get("REDIS_URL", "redis://: pb9c635f068b47844b4edf6b9862de8ccbfc0140407593ee79ddf2d5c1885199d@ec2-44-193-224-177.compute-1.amazonaws.com:12509"),
+        "LOCATION": os.environ.get(
+            "REDIS_URL",
+            "redis://: pb9c635f068b47844b4edf6b9862de8ccbfc0140407593ee79ddf2d5c1885199d@ec2-44-193-224-177.compute-1.amazonaws.com:12509",
+        ),
         "OPTION": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
@@ -52,15 +54,15 @@ DATABASES = {
 db_from_env = dj_database_url.config(conn_max_age=600)
 DATABASES["default"].update(db_from_env)
 
-if os.environ.get('GITHUB_WORKFLOW'):
+if os.environ.get("GITHUB_WORKFLOW"):
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres',
-            'PASSWORD': 'postgres',
-            'HOST': 'postgres',
-            'PORT': os.environ.get('POSTGRES_PORT')
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "postgres",
+            "USER": "postgres",
+            "PASSWORD": "postgres",
+            "HOST": "postgres",
+            "PORT": os.environ.get("POSTGRES_PORT"),
         }
     }
     CACHES = {
@@ -80,7 +82,9 @@ STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-STATICFILES_STORAGE = "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
+STATICFILES_STORAGE = (
+    "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
+)
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # CLOUDINARY_URL = os.environ.get("CLOUDINARY_URL")
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"

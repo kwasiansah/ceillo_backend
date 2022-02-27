@@ -46,7 +46,9 @@ class Category(models.Model):
     name = models.CharField(max_length=MAX_LENGTH, default="", blank=False)
     url_slug = models.SlugField(max_length=250)
 
-    thumbnail = models.ImageField(upload_to="Category/", default="default/default.jpg")
+    thumbnail = models.ImageField(
+        upload_to="Category/", default="default/default.jpg"
+    )
     description = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=False)
@@ -82,7 +84,11 @@ class Category(models.Model):
 class Product(models.Model):
 
     product_id = models.UUIDField(
-        default=uuid.uuid4, unique=True, blank=False, null=False, editable=False
+        default=uuid.uuid4,
+        unique=True,
+        blank=False,
+        null=False,
+        editable=False,
     )
     name = models.CharField(max_length=MAX_LENGTH, unique=False)
     url_slug = models.SlugField(default="")
@@ -151,10 +157,16 @@ class ProductMedia(models.Model):
     # TODO: remember to change to null = False later
 
     product = models.ForeignKey(
-        Product, on_delete=models.CASCADE, null=True, blank=False, related_name="images"
+        Product,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=False,
+        related_name="images",
     )
     # this field name must change to image
-    image_url = models.ImageField(upload_to="products/", default="default/default.jpg")
+    image_url = models.ImageField(
+        upload_to="products/", default="default/default.jpg"
+    )
     thumbnail = models.ImageField(
         upload_to="products/thumbnail/", null=True, blank=True
     )
@@ -253,7 +265,9 @@ class ProductReviews(models.Model):
     i would create a unique id to be used for the individual reviews to query the data base and use in the url
     """
 
-    image = models.ImageField(upload_to="reviews/", default="default/default.jpg")
+    image = models.ImageField(
+        upload_to="reviews/", default="default/default.jpg"
+    )
     # TODO: rating should be a new model
     rating = models.FloatField(
         default=0.0,

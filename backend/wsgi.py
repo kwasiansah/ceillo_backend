@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.1/howto/deployment/wsgi/
 import os
 
 from django.core.wsgi import get_wsgi_application
+
 # from whitenoise import WhiteNoise
 
 # from .settings.base import MEDIA_ROOT, MEDIA_URL, STATIC_ROOT, STATIC_URL

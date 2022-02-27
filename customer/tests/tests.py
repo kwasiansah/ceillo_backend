@@ -52,7 +52,9 @@ class CustomerTestCase(TestCase):
     def test_user_admin(self):
         self.user_a.is_active = True
         self.assertTrue(
-            self.user_a.is_active and self.user_a.is_staff and self.user_a.is_superuser
+            self.user_a.is_active
+            and self.user_a.is_staff
+            and self.user_a.is_superuser
         )
 
     def test_user_active(self):

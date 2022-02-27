@@ -92,12 +92,17 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "product_id",
-                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                    models.UUIDField(
+                        default=uuid.uuid4, editable=False, unique=True
+                    ),
                 ),
                 ("name", models.CharField(max_length=1000)),
                 ("url_slug", models.SlugField(default="")),
                 ("brand", models.CharField(max_length=250)),
-                ("price", models.DecimalField(decimal_places=2, max_digits=10)),
+                (
+                    "price",
+                    models.DecimalField(decimal_places=2, max_digits=10),
+                ),
                 ("description", models.TextField()),
                 ("long_description", models.TextField()),
                 ("created", models.DateTimeField(auto_now_add=True)),
