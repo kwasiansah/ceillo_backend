@@ -1,6 +1,7 @@
-from .base import *
-from . import base
 import dj_database_url
+
+from . import base
+from .base import *
 
 SECRET_KEY = "=%gglh9$vmlbah*d(o!6x+l%l60t%+q$m)w%vxtz2ag=m)q7sj"
 
@@ -25,10 +26,7 @@ base.INSTALLED_APPS += PRODUCTION_APPS
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.environ.get(
-            "REDIS_URL",
-            "redis://:pb9c635f068b47844b4edf6b9862de8ccbfc0140407593ee79ddf2d5c1885199d@ec2-3-213-251-87.compute-1.amazonaws.com:17530"
-        ),
+        "LOCATION": "redis://:pb9c635f068b47844b4edf6b9862de8ccbfc0140407593ee79ddf2d5c1885199d@ec2-3-213-251-87.compute-1.amazonaws.com:17530",
         "OPTION": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
@@ -40,7 +38,9 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "d6d0cq9nmvoin8",
         "USER": "rbrdpyhintglrw",
-        "PASSWORD": "2d71ffb2e1c7ffcd820a78e6230e19e0d70128bce2bc90967bcce9fbfcd0acd2",
+        "PASSWORD": (
+            "2d71ffb2e1c7ffcd820a78e6230e19e0d70128bce2bc90967bcce9fbfcd0acd2"
+        ),
         "HOST": "ec2-44-199-40-188.compute-1.amazonaws.com",
         "PORT": "5432",
     }
