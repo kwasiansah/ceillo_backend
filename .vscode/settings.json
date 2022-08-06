@@ -1,0 +1,16 @@
+{
+    // auto format code on save
+    "editor.formatOnSave": true,
+    // use flake8 for python code linting - logic and codestyle
+    // "python.linting.flake8Enabled": true,
+    // enable linting
+    "python.linting.enabled": true,
+    // use black for auto style formatting
+    "python.formatting.provider": "black",
+    // sort imports with isort plugin on save
+    "[python]": {
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        }
+    }
+}

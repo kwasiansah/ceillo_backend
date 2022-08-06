@@ -1,0 +1,13 @@
+{
+    // It is recommended that you install these extensions in your Visual Studio Code
+    // development environment for a better experience.
+    //
+    // See https://code.visualstudio.com/docs/editor/extension-marketplace#_workspace-recommended-extensions
+    // for documentation about extensions.json format
+
+    "recommendations": [
+        "mikestead.dotenv",
+        "donjayamanne.python-extension-pack",
+        "TabNine.tabnine-vscode"
+    ]
+}
