@@ -26,7 +26,7 @@ base.INSTALLED_APPS += PRODUCTION_APPS
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://:pb9c635f068b47844b4edf6b9862de8ccbfc0140407593ee79ddf2d5c1885199d@ec2-3-213-251-87.compute-1.amazonaws.com:17530",
+        "LOCATION": "redis://:p91b5344cb01bbe9a5e8070a07fd08afd035588d052ff90c332b9a11d10a91082@ec2-3-209-0-252.compute-1.amazonaws.com:26900",
         "OPTION": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
