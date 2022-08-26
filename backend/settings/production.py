@@ -59,13 +59,18 @@ if os.environ.get("GITHUB_WORKFLOW"):
             "PORT": os.environ.get("POSTGRES_PORT"),
         }
     }
+    # CACHES = {
+    #     "default": {
+    #         "BACKEND": "django_redis.cache.RedisCache",
+    #         "LOCATION": os.environ.get("CACHE_REDIS_LOCATION"),
+    #         "OPTION": {
+    #             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+    #         },
+    #     }
+    # }
     CACHES = {
         "default": {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": os.environ.get("CACHE_REDIS_LOCATION"),
-            "OPTION": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            },
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         }
     }
 

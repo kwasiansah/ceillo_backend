@@ -17,7 +17,7 @@ class CartView(APIView):
 
     def get(self, request):
         cart = get_or_create_cart(user=request.user)
-        serializer = CartSerializer(cart)
+        serializer = CartSerializer(cart, context={"request": request})
         data = {
             "data": serializer.data,
         }
