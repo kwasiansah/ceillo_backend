@@ -107,7 +107,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = "ceillogh@gmail.com"
 EMAIL_HOST_USER = "ceillogh@gmail.com"
-EMAIL_HOST_PASSWORD = "ceillo@123"
+EMAIL_HOST_PASSWORD = "euwrfrezuupboplf"
 
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
