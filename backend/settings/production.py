@@ -23,15 +23,20 @@ base.INSTALLED_APPS += PRODUCTION_APPS
 
 
 # CACHES
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://:p91b5344cb01bbe9a5e8070a07fd08afd035588d052ff90c332b9a11d10a91082@ec2-3-209-0-252.compute-1.amazonaws.com:26900",
+#         "OPTION": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         },
+#     }
+# }
 CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://:p91b5344cb01bbe9a5e8070a07fd08afd035588d052ff90c332b9a11d10a91082@ec2-3-209-0-252.compute-1.amazonaws.com:26900",
-        "OPTION": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
     }
-}
 # DATABASES
 DATABASES = {
     "default": {
@@ -59,20 +64,16 @@ if os.environ.get("GITHUB_WORKFLOW"):
             "PORT": os.environ.get("POSTGRES_PORT"),
         }
     }
-    # CACHES = {
-    #     "default": {
-    #         "BACKEND": "django_redis.cache.RedisCache",
-    #         "LOCATION": os.environ.get("CACHE_REDIS_LOCATION"),
-    #         "OPTION": {
-    #             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-    #         },
-    #     }
-    # }
     CACHES = {
         "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": os.environ.get("CACHE_REDIS_LOCATION"),
+            "OPTION": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
         }
     }
+    
 
 # STATIC FILES
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
