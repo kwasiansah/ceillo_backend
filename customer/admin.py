@@ -62,7 +62,7 @@ class UserChangeForm(forms.ModelForm):
     """
 
     password = ReadOnlyPasswordHashField()
-
+    # TODO; Remove Email a user should not be able to change email
     class Meta:
         model = Customer
         fields = (

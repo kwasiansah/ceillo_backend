@@ -3,7 +3,7 @@ import dj_database_url
 from . import base
 from .base import *
 
-SECRET_KEY = "=%gglh9$vmlbah*d(o!6x+l%l60t%+q$m)w%vxtz2ag=m)q7sj"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
 DEBUG = True
@@ -33,21 +33,18 @@ base.INSTALLED_APPS += PRODUCTION_APPS
 #     }
 # }
 CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        }
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
     }
+}
 # DATABASES
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "d6d0cq9nmvoin8",
-        "USER": "rbrdpyhintglrw",
-        "PASSWORD": (
-            "2d71ffb2e1c7ffcd820a78e6230e19e0d70128bce2bc90967bcce9fbfcd0acd2"
-        ),
-        "HOST": "ec2-44-199-40-188.compute-1.amazonaws.com",
-        "PORT": "5432",
+        "USER": os.environ.get("DB_USERNAME"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": os.environ.get("DB_HOST"),
+        "PORT": os.environ.get("DB_PORT"),
     }
 }
 db_from_env = dj_database_url.config(conn_max_age=600)
@@ -73,7 +70,7 @@ if os.environ.get("GITHUB_WORKFLOW"):
             },
         }
     }
-    
+
 
 # STATIC FILES
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
@@ -106,9 +103,9 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = "ceillogh@gmail.com"
-EMAIL_HOST_USER = "ceillogh@gmail.com"
-EMAIL_HOST_PASSWORD = "euwrfrezuupboplf"
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
@@ -118,9 +115,9 @@ SILENCED_SYSTEM_CHECKS = ["security.W019"]
 
 # CLOUDINARY
 CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": "ha8rp7uvj",
-    "API_KEY": "124267939288912",
-    "API_SECRET": "hYc8kADJiaPpdWAQQO7I2qfIpxk",
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
 }
 
 

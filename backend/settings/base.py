@@ -22,8 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "=%gglh9$vmlbah*d(o!6x+l%l60t%+q$m)w%vxtz2ag=m)q7sj"
-
+SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -36,10 +35,9 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    #THIRD PARTY APPS THAT NEED TO COME BEFORE DJANGO APPS
+    # THIRD PARTY APPS THAT NEED TO COME BEFORE DJANGO APPS
     "admin_interface",
     "colorfield",
-    
     # DJANGO APPS
     "django.contrib.admin",
     "django.contrib.auth",
@@ -49,13 +47,11 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "cloudinary_storage",
     "django.contrib.staticfiles",
-
     # PROJECT APPS
     "customer.apps.CustomerConfig",
     "product.apps.ProductConfig",
     "cart.apps.CartConfig",
     "search.apps.SearchConfig",
-    
     # THIRD PARTY APPS
     "cloudinary",
     "drf_yasg",
@@ -108,9 +104,9 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'ceillo.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "ceillo.sqlite3",
     }
 }
 
@@ -132,13 +128,19 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation.MinimumLengthValidator"
+        ),
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation.CommonPasswordValidator"
+        ),
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation.NumericPasswordValidator"
+        ),
     },
 ]
 
@@ -162,7 +164,9 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
-STATICFILES_STORAGE = "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
+STATICFILES_STORAGE = (
+    "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
+)
 # STATICFILES_DIRS  = (os.path.join(BASE_DIR, 'static'),)
 
 # Default primary key field type
@@ -255,9 +259,9 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = "ceillogh@gmail.com"
-EMAIL_HOST_USER = "ceillogh@gmail.com"
-EMAIL_HOST_PASSWORD = "ceillo@123"
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 # this defines the time it takes the token to expire
 EMAIL_RESET_TOKEN_TIMEOUT_MIN = 60
@@ -272,10 +276,9 @@ CACHES = {
     }
 }
 X_FRAME_OPTIONS = "SAMEORIGIN"
-SILENCED_SYSTEM_CHECKS = ["security.W019"]
 
 CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": "ha8rp7uvj",
-    "API_KEY": "124267939288912",
-    "API_SECRET": "hYc8kADJiaPpdWAQQO7I2qfIpxk",
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_NAME"),
+    "API_KEY": os.environ.get("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET"),
 }
