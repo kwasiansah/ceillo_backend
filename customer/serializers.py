@@ -26,7 +26,7 @@ class RetrieveCustomerSerializer(serializers.ModelSerializer):
         model = Customer
         exclude = ["password"]
 
-    """this section not needed right now because of cloudinary"""
+    """this section not required now because of cloudinary"""
     # def photo_url(self, obj):
     #     try:
     #         url = obj.photo.url
@@ -81,7 +81,7 @@ class CreateCustomerSerializer(serializers.Serializer):
             return super().validate(attrs)
 
         raise serializers.ValidationError(
-            {"message": "Passwords Do Not Match"}, status.HTTP_400_BAD_REQUEST
+            {"message": "Unmatching Passwords"}, status.HTTP_400_BAD_REQUEST
         )
 
     def create(self, validated_data):

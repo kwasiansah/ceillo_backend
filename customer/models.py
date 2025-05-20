@@ -112,7 +112,7 @@ class Merchant(models.Model):
         related_name="merchant",
     )
     brand = models.CharField(
-        max_length=250, help_text="The merchant name you would want to use"
+        max_length=250, help_text="Your dream merchant name."
     )
     # Todo change this null to false
     id_card = models.ImageField(upload_to="merchant/", null=True, blank=False)

@@ -10,7 +10,7 @@
     // sort imports with isort plugin on save
     "[python]": {
         "editor.codeActionsOnSave": {
-            "source.organizeImports": true
+            "source.organizeImports": "explicit"
         }
     }
 }
